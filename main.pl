@@ -22,22 +22,34 @@ generate_obstacle(BoardHeigth,BoardWidth,ObstacleCount,Dirty,Obstacles,Childs,Co
 generate_obstacle(BoardHeigth,BoardWidth,0,Dirty,Obstacles,Childs,Corral,Robots,ResultObstacles):- 
 	ResultObstacles = Obstacles.
 			
-generate_dirty(BoardHeigth,BoardWidth,DirtinessCount,Dirty,Obstacles,Childs,Corral,Robots,ResultDiriness):-
+generate_dirty(BoardHeigth,BoardWidth,DirtinessCount,Dirty,Obstacles,Childs,Corral,Robots,ResultDirtiness):-
 	DirtinessCount > 0,
 	X is DirtinessCount-1,
 	generate_pos(BoardHeigth,BoardWidth,Dirty,Obstacles,Childs,Corral,Robots,Pos),
 	Result = [Pos|Dirty],
 	generate_dirty(BoardHeigth,BoardWidth,X,Result,Obstacles,Childs,Corral,Robots,Result2),
-	append([],Result2,ResultDiriness),!.
+	append([],Result2,ResultDirtiness),!.
 
-generate_dirty(BoardHeigth,BoardWidth,0,Dirty,Obstacles,Childs,Corral,Robots,ResultDiriness):- 
-	ResultDiriness = Dirty.
+generate_dirty(BoardHeigth,BoardWidth,0,Dirty,Obstacles,Childs,Corral,Robots,ResultDirtiness):- 
+	ResultDirtiness = Dirty.
 
+generate_childs(BoardHeigth,BoardWidth,ChildsCount,Dirty,Obstacles,Childs,Corral,Robots,ResultChilds):-
+	ChildsCount > 0,
+	X is ChildsCount-1,
+	generate_pos(BoardHeigth,BoardWidth,Dirty,Obstacles,Childs,Corral,Robots,Pos),
+	Result = [Pos|Childs],
+	generate_childs(BoardHeigth,BoardWidth,X,Dirty,Obstacles,Result,Corral,Robots,Result2),
+	append([],Result2,ResultChilds),!.
+
+generate_childs(BoardHeigth,BoardWidth,0,Dirty,Obstacles,Childs,Corral,Robots,ResultChilds):- 
+	ResultChilds = Childs.
+
+%generate_corral(BoardHeigth,BoardWidth,CorralCount,Dirty,Obstacles,Childs,Corral,Robots,ResultDirtiness)
 
 main:-
 	Agent = 5,
-	BoardHeigth = 8,
-	BoardWidth = 5,
+	BoardHeigth = 50,
+	BoardWidth = 50,
 	Time = 0,
 	TimeChange = 5,
 	DirtinessPercent = 17,
@@ -51,8 +63,19 @@ main:-
 	Corral = [],
 	Robots = [],
 	generate_obstacle(BoardHeigth,BoardWidth,ObstacleCount,Dirty,Obstacles,Childs,Corral,Robots,ObstaclesEnv),
-	
-	generate_dirty(BoardHeigth,BoardWidth,DirtinessCount,Dirty,ObstaclesEnv,Childs,Corral,Robots,ResultDiriness).
-
+	nl,	
+	write(ObstaclesEnv),
+	write(111111111111111111111111111111111111111111111111),	
+	nl,
+	generate_dirty(BoardHeigth,BoardWidth,DirtinessCount,Dirty,ObstaclesEnv,Childs,Corral,Robots,ResultDirtiness),
+	nl,	
+	write(ResultDirtiness),
+	write(111111111111111111111111111111111111111111111111),	
+	nl,
+	generate_childs(BoardHeigth,BoardWidth,ChildsCount,Dirty,Obstacles,Childs,Corral,Robots,ResultChilds),
+	nl,	
+	write(ResultChilds),
+	write(111111111111111111111111111111111111111111111111),	
+	nl.
 	%write(ObstaclesEnv).
 	
