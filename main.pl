@@ -11,15 +11,15 @@ generate_pos(BoardHeigth,BoardWidth,Dirty,Obstacles,Childs,Corral,Robots,Pos):-
 generate_pos(BoardHeigth,BoardWidth,Dirty,Obstacles,Childs,Corral,Robots,Pos):-
 		generate_pos(BoardHeigth,BoardWidth,Dirty,Obstacles,Childs,Corral,Robots,Pos).
 
-generate_env(BoardHeigth,BoardWidth,Agent,DirtinessCount,ObstacleCount,ChildsCount,Dirty,Obstacles,Childs,Corral,Robots,ResultObstacles):-
+generate_obstacle(BoardHeigth,BoardWidth,ObstacleCount,Dirty,Obstacles,Childs,Corral,Robots,ResultObstacles):-
 	ObstacleCount > 0,
 	X is ObstacleCount-1,
 	generate_pos(BoardHeigth,BoardWidth,Dirty,Obstacles,Childs,Corral,Robots,Pos),
 	Result = [Pos|Obstacles],
-	generate_env(BoardHeigth,BoardWidth,Agent,DirtinessCount,X,ChildsCount,Dirty,Result,Childs,Corral,Robots,Result2),
+	generate_obstacle(BoardHeigth,BoardWidth,X,Dirty,Result,Childs,Corral,Robots,Result2),
 	append([],Result2,ResultObstacles),!.
 
-generate_env(BoardHeigth,BoardWidth,Agent,DirtinessCount,0,ChildsCount,Dirty,Obstacles,Childs,Corral,Robots,ResultObstacles):- 
+generate_obstacle(BoardHeigth,BoardWidth,0,Dirty,Obstacles,Childs,Corral,Robots,ResultObstacles):- 
 	ResultObstacles = Obstacles.
 			
 
@@ -40,7 +40,7 @@ main:-
 	Childs = [],
 	Corral = [],
 	Robots = [],
-	generate_env(BoardHeigth,BoardWidth,Agent,DirtinessCount,ObstacleCount,ChildsCount,Dirty,Obstacles,Childs,Corral,Robots,ObstaclesEnv),
+	generate_obstacle(BoardHeigth,BoardWidth,ObstacleCount,Dirty,Obstacles,Childs,Corral,Robots,ObstaclesEnv),
 	write(ObstaclesEnv).
 	%write(ObstaclesEnv).
 	
