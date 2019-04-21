@@ -76,8 +76,10 @@ generate_corral(BoardHeight, BoardWidth,0, Corrales, CorralResult) :-
 generate_corral(BoardHeight, BoardWidth,CorralCount, Corrales, CorralResult) :-
 	generate_corral(BoardHeight, BoardWidth,CorralCount, Corrales, CorralResult).
 
-new_dirty(BoardHeight, BoardHeight, [X,Y],Pos):-
-	
+new_dirty(BoardHeight, BoardWidth, [X,Y],Pos):-
+	%How to use
+	% new_dirty(BoardHeight,BoardWidth, [5,4], Pos),
+	% write(Pos).
 	random(0, 8, R),	
 	((R =:= 0, X1 is X + 1,
         append([X1],[Y],Pos),
@@ -125,8 +127,7 @@ main:-
 	generate_obstacle(BoardHeight,BoardWidth,ObstacleCount,Dirty,Obstacles,Childs,Corral,ObstaclesEnv),
 	generate_dirty(BoardHeight,BoardWidth,DirtinessCount,Dirty,ObstaclesEnv,Childs,Corral,ResultDirtiness),
 	generate_childs(BoardHeight,BoardWidth,ChildsCount,ResultDirtiness,ObstaclesEnv,Childs,Corral,ResultChilds),
-	new_dirty(BoardHeight,BoardWidth, [5,4], Pos),
-	write(Pos).
+	
 	%generate_pos(BoardHeight,BoardWidth,ResultDirtiness,ObstaclesEnv,ResultChilds,Corral,Robot).
 	%Falta calcular los corrales
 	%write(ObstaclesEnv).
