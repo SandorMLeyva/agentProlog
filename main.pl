@@ -104,17 +104,81 @@ new_dirty(BoardHeight, BoardWidth, [X,Y],Pos):-
         X1 > -1, X1 < BoardWidth, Y1 > -1, Y1 < BoardHeight);
      (R =:= 7, X1 is X - 1, Y1 is Y+1,
         append([X1],[Y1],Pos),
-        X1 > -1, X1 < BoardWidth, Y1 > -1, Y1 < BoardHeight)).
+        X1 > -1, X1 < BoardWidth, Y1 > -1, Y1 < BoardHeight)),!.
+
+new_dirty(BoardHeight, BoardWidth, [X,Y],Pos):-
+	Pos = [].
 
 
+inList(Item, List, R):-
+	member(Item, List), R is 1, !.	
 
+inList(Item, List, R):-
+	not(member(Item, List)), R is 0.
+
+countChildsAround([X,Y], Childs, R):-
+	X1 is X + 1,
+	inList([X1,Y], Childs, R1),
+	Y1 is Y+1,
+	inList([X,Y1], Childs, R2),
+	inList([X1,Y1], Childs, R3),
+	X2 is X-1,
+	inList([X2,Y], Childs, R4),
+	Y2 is Y-1,
+	inList([X,Y2], Childs, R5),
+	inList([X2,Y2], Childs, R6),
+	inList([X1,Y2], Childs, R7),
+	inList([X2,Y1], Childs, R8),
+	R is R1+R2+R3+R4+R5+R6+R7+R8.
+
+add_list_set(Item,List,Result):-
+	length(Item, L),
+	L > 0,
+	not(member(Item, List)),
+	append([Item],List,Result),!.
+	
+add_list_set(Item,List,R):-
+	R = List.
+	
+		
+
+dirty_result(BoardHeight, BoardWidth,0, PosChild, DirtyResult):-
+	new_dirty(BoardHeight, BoardWidth, PosChild,Pos1),
+	add_list_set(Pos1,[],DirtyResult),!.
+
+dirty_result(BoardHeight, BoardWidth,1, PosChild, DirtyResult):-
+	new_dirty(BoardHeight, BoardWidth, PosChild,Pos1),
+	new_dirty(BoardHeight, BoardWidth, PosChild,Pos2),
+
+	add_list_set(Pos1,[],DirtyResult1),
+	add_list_set(Pos2,DirtyResult1,DirtyResult),!.
+
+dirty_result(BoardHeight, BoardWidth,R, PosChild, DirtyResult):-
+	new_dirty(BoardHeight, BoardWidth, PosChild,Pos1),
+	new_dirty(BoardHeight, BoardWidth, PosChild,Pos2),
+	new_dirty(BoardHeight, BoardWidth, PosChild,Pos3),
+	new_dirty(BoardHeight, BoardWidth, PosChild,Pos4),
+	new_dirty(BoardHeight, BoardWidth, PosChild,Pos5),
+	new_dirty(BoardHeight, BoardWidth, PosChild,Pos6),
+	
+	add_list_set(Pos1,[],DirtyResult1),
+	add_list_set(Pos2,DirtyResult1,DirtyResult2),
+	add_list_set(Pos3,DirtyResult2,DirtyResult3),
+	add_list_set(Pos4,DirtyResult3,DirtyResult4),
+	add_list_set(Pos5,DirtyResult4,DirtyResult5),
+	add_list_set(Pos6,DirtyResult5,DirtyResult).
+
+
+make_dirty(BoardHeight, BoardWidth, PosChild, Childs, DirtyResult):-
+	countChildsAround(PosChild, Childs, R),
+	dirty_result(BoardHeight, BoardWidth,R, PosChild, DirtyResult).
 
 main:-
-	BoardHeight = 50,
-	BoardWidth = 50,
+	BoardHeight = 15,
+	BoardWidth = 15,
 	Time = 0,
 	TimeChange = 5,
-	ChildsCount = 10,
+	ChildsCount = 5,
 	DirtinessPercent = 17,
 	ObstaclePercent = 10,
 	DirtinessCount is round((DirtinessPercent/100)*BoardHeight*BoardWidth),
@@ -127,7 +191,12 @@ main:-
 	generate_obstacle(BoardHeight,BoardWidth,ObstacleCount,Dirty,Obstacles,Childs,Corral,ObstaclesEnv),
 	generate_dirty(BoardHeight,BoardWidth,DirtinessCount,Dirty,ObstaclesEnv,Childs,Corral,ResultDirtiness),
 	generate_childs(BoardHeight,BoardWidth,ChildsCount,ResultDirtiness,ObstaclesEnv,Childs,Corral,ResultChilds),
+	nth0(0, ResultChilds, Elem),
+	make_dirty(BoardHeight, BoardWidth, Elem, ResultChilds, DirtyResult),
+	write(DirtyResult).
 	
+	
+
 	%generate_pos(BoardHeight,BoardWidth,ResultDirtiness,ObstaclesEnv,ResultChilds,Corral,Robot).
 	%Falta calcular los corrales
 	%write(ObstaclesEnv).
