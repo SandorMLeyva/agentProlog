@@ -43,8 +43,10 @@ generate_childs(BoardHeight,BoardWidth,ChildsCount,Dirty,Obstacles,Childs,Corral
 generate_childs(BoardHeight,BoardWidth,0,Dirty,Obstacles,Childs,Corral,ResultChilds):- 
 	ResultChilds = Childs.
 
-sample(L, R) :- length(L, Len), random(0, Len, Random), nth0(Random, L, R).
-
+sample(L, R) :- 
+	length(L, Len), 
+	random(0, Len, Random), 
+	nth0(Random, L, R).
 generate_corral(BoardHeight, BoardWidth, CorralCount, Corrales, CorralResult) :-
 	CorralCount > 0,
 	C is CorralCount-1,
@@ -131,29 +133,30 @@ countChildsAround([X,Y], Childs, R):-
 	inList([X2,Y1], Childs, R8),
 	R is R1+R2+R3+R4+R5+R6+R7+R8.
 
-add_list_set(Item,List,Result):-
+add_list_set(Dirty,Obstacles,Item,List,Result):-
 	length(Item, L),
 	L > 0,
+	not(member(Item,Dirty)),
+	not(member(Item,Obstacles)),
 	not(member(Item, List)),
-	append([Item],List,Result),!.
+	append([Item],List,Result).
 	
-add_list_set(Item,List,R):-
+add_list_set(Dirty,Obstacles, Item,List,R):-
 	R = List.
-	
 		
 
-dirty_result(BoardHeight, BoardWidth,0, PosChild, DirtyResult):-
+dirty_result(BoardHeight, BoardWidth,Dirty,Obstacles,0, PosChild, DirtyResult):-
 	new_dirty(BoardHeight, BoardWidth, PosChild,Pos1),
-	add_list_set(Pos1,[],DirtyResult),!.
+	add_list_set(Dirty,Obstacles,Pos1,[],DirtyResult),!.
 
-dirty_result(BoardHeight, BoardWidth,1, PosChild, DirtyResult):-
+dirty_result(BoardHeight, BoardWidth,Dirty,Obstacles,1, PosChild, DirtyResult):-
 	new_dirty(BoardHeight, BoardWidth, PosChild,Pos1),
 	new_dirty(BoardHeight, BoardWidth, PosChild,Pos2),
 
-	add_list_set(Pos1,[],DirtyResult1),
-	add_list_set(Pos2,DirtyResult1,DirtyResult),!.
+	add_list_set(Dirty,Obstacles,Pos1,[],DirtyResult1),
+	add_list_set(Dirty,Obstacles,Pos2,DirtyResult1,DirtyResult),!.
 
-dirty_result(BoardHeight, BoardWidth,R, PosChild, DirtyResult):-
+dirty_result(BoardHeight, BoardWidth,Dirty,Obstacles,R, PosChild, DirtyResult):-
 	new_dirty(BoardHeight, BoardWidth, PosChild,Pos1),
 	new_dirty(BoardHeight, BoardWidth, PosChild,Pos2),
 	new_dirty(BoardHeight, BoardWidth, PosChild,Pos3),
@@ -161,17 +164,28 @@ dirty_result(BoardHeight, BoardWidth,R, PosChild, DirtyResult):-
 	new_dirty(BoardHeight, BoardWidth, PosChild,Pos5),
 	new_dirty(BoardHeight, BoardWidth, PosChild,Pos6),
 	
-	add_list_set(Pos1,[],DirtyResult1),
-	add_list_set(Pos2,DirtyResult1,DirtyResult2),
-	add_list_set(Pos3,DirtyResult2,DirtyResult3),
-	add_list_set(Pos4,DirtyResult3,DirtyResult4),
-	add_list_set(Pos5,DirtyResult4,DirtyResult5),
-	add_list_set(Pos6,DirtyResult5,DirtyResult).
+	writeln(Pos1),
+	add_list_set(Dirty,Obstacles,Pos1,[],DirtyResult1),
+	writeln(DirtyResult1),
+	writeln(Pos2),
+	add_list_set(Dirty,Obstacles,Pos2,DirtyResult1,DirtyResult2),
+	writeln(DirtyResult2),
+	
+	writeln(Pos3),
+	add_list_set(Dirty,Obstacles,Pos3,DirtyResult2,DirtyResult3),
+	writeln(DirtyResult3),
+	writeln(Pos4),
+	add_list_set(Dirty,Obstacles,Pos4,DirtyResult3,DirtyResult4),
+	writeln(DirtyResult4),
+	writeln(Pos5),
+	add_list_set(Dirty,Obstacles,Pos5,DirtyResult4,DirtyResult5),
+	writeln(DirtyResult5),
+	add_list_set(Dirty,Obstacles,Pos6,DirtyResult5,DirtyResult).
 
 
-make_dirty(BoardHeight, BoardWidth, PosChild, Childs, DirtyResult):-
+make_dirty(BoardHeight, BoardWidth,Dirty,Obstacles, PosChild, Childs, DirtyResult):-
 	countChildsAround(PosChild, Childs, R),
-	dirty_result(BoardHeight, BoardWidth,R, PosChild, DirtyResult).
+	dirty_result(BoardHeight, BoardWidth,Dirty,Obstacles,R, PosChild, DirtyResult).
 
 main:-
 	BoardHeight = 15,
@@ -187,12 +201,13 @@ main:-
 	Obstacles = [],
 	Childs = [],
 	generate_pos(BoardHeight,BoardWidth,[],[],[],[],Corral),
-	generate_corral(BoardHeight, BoardWidth, ChildsCount, [Corral], Result),
-	generate_obstacle(BoardHeight,BoardWidth,ObstacleCount,Dirty,Obstacles,Childs,Corral,ObstaclesEnv),
-	generate_dirty(BoardHeight,BoardWidth,DirtinessCount,Dirty,ObstaclesEnv,Childs,Corral,ResultDirtiness),
-	generate_childs(BoardHeight,BoardWidth,ChildsCount,ResultDirtiness,ObstaclesEnv,Childs,Corral,ResultChilds),
+	generate_corral(BoardHeight, BoardWidth, ChildsCount, [Corral], CorralResult),
+	generate_obstacle(BoardHeight,BoardWidth,ObstacleCount,Dirty,Obstacles,Childs,CorralResult,ObstaclesEnv),
+	generate_dirty(BoardHeight,BoardWidth,DirtinessCount,Dirty,ObstaclesEnv,Childs,CorralResult,ResultDirtiness),
+	generate_childs(BoardHeight,BoardWidth,ChildsCount,ResultDirtiness,ObstaclesEnv,Childs,CorralResult,ResultChilds),
 	nth0(0, ResultChilds, Elem),
-	make_dirty(BoardHeight, BoardWidth, Elem, ResultChilds, DirtyResult),
+	make_dirty(BoardHeight, BoardWidth,ResultDirtiness,ObstaclesEnv, Elem, ResultChilds, DirtyResult),
+	writeln(Elem),
 	write(DirtyResult).
 	
 	
