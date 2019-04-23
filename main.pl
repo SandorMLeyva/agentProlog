@@ -144,7 +144,6 @@ add_list_set(Dirty,Obstacles,Item,List,Result):-
 add_list_set(Dirty,Obstacles, Item,List,R):-
 	R = List.
 		
-
 dirty_result(BoardHeight, BoardWidth,Dirty,Obstacles,0, PosChild, DirtyResult):-
 	new_dirty(BoardHeight, BoardWidth, PosChild,Pos1),
 	add_list_set(Dirty,Obstacles,Pos1,[],DirtyResult),!.
@@ -164,28 +163,46 @@ dirty_result(BoardHeight, BoardWidth,Dirty,Obstacles,R, PosChild, DirtyResult):-
 	new_dirty(BoardHeight, BoardWidth, PosChild,Pos5),
 	new_dirty(BoardHeight, BoardWidth, PosChild,Pos6),
 	
-	writeln(Pos1),
 	add_list_set(Dirty,Obstacles,Pos1,[],DirtyResult1),
-	writeln(DirtyResult1),
-	writeln(Pos2),
 	add_list_set(Dirty,Obstacles,Pos2,DirtyResult1,DirtyResult2),
-	writeln(DirtyResult2),
 	
-	writeln(Pos3),
 	add_list_set(Dirty,Obstacles,Pos3,DirtyResult2,DirtyResult3),
-	writeln(DirtyResult3),
-	writeln(Pos4),
 	add_list_set(Dirty,Obstacles,Pos4,DirtyResult3,DirtyResult4),
-	writeln(DirtyResult4),
-	writeln(Pos5),
 	add_list_set(Dirty,Obstacles,Pos5,DirtyResult4,DirtyResult5),
-	writeln(DirtyResult5),
 	add_list_set(Dirty,Obstacles,Pos6,DirtyResult5,DirtyResult).
 
 
 make_dirty(BoardHeight, BoardWidth,Dirty,Obstacles, PosChild, Childs, DirtyResult):-
 	countChildsAround(PosChild, Childs, R),
 	dirty_result(BoardHeight, BoardWidth,Dirty,Obstacles,R, PosChild, DirtyResult).
+
+
+
+move_obstacle(BoardHeight, BoardWidth, Dirty,Obstacles,Childs,Corral, [I,J], [X,Y], Result):-
+	X1 is X+I,
+	Y1 is Y+J,
+	not(member([X1,Y1], Obstacles)),
+	not(member([X1,Y1],Dirty)),
+	not(member([X1,Y1],Childs)),
+	not(member([X1,Y1],Corral)),
+	X1 < BoardWidth,
+	X1 > -1,
+	Y1 < BoardHeight,
+	Y1 > -1,
+	delete(Obstacles, [X,Y], Result2),
+	append([[X1,Y1]],Result2, Result).
+
+move_obstacle(BoardHeight, BoardWidth, Dirty,Obstacles,Childs,Corral, [I,J], [X,Y], Result):-
+	X1 is X+I,
+	Y1 is Y+J,
+	member([X1,Y1], Obstacles),
+	move_obstacle(BoardHeight, BoardWidth, Dirty,Obstacles,Childs,Corral, [I,J], [X1,Y1], Result2),
+	delete(Result2, [X,Y], Result3),	
+	append(Result3,[], Result4),
+	append([[X1,Y1]],Result4, Result).
+
+move_obstacle(BoardHeight, BoardWidth, Dirty,Obstacles,Childs,Corral, [I,J], [X,Y], Obstacles).
+
 
 main:-
 	BoardHeight = 15,
@@ -205,11 +222,15 @@ main:-
 	generate_obstacle(BoardHeight,BoardWidth,ObstacleCount,Dirty,Obstacles,Childs,CorralResult,ObstaclesEnv),
 	generate_dirty(BoardHeight,BoardWidth,DirtinessCount,Dirty,ObstaclesEnv,Childs,CorralResult,ResultDirtiness),
 	generate_childs(BoardHeight,BoardWidth,ChildsCount,ResultDirtiness,ObstaclesEnv,Childs,CorralResult,ResultChilds),
+	
+	%selecciona un ninno y lo para que ejecute la accion de ensuciar
 	nth0(0, ResultChilds, Elem),
 	make_dirty(BoardHeight, BoardWidth,ResultDirtiness,ObstaclesEnv, Elem, ResultChilds, DirtyResult),
-	writeln(Elem),
-	write(DirtyResult).
-	
+	%writeln(Elem),
+	%write(DirtyResult),
+
+	move_obstacle(BoardHeight, BoardWidth, [],[[1,1],[2,2],[3,3],[4,1],[5,1],[6,1]],[],[], [1,1], [0,0], Result),
+	writeln(Result).
 	
 
 	%generate_pos(BoardHeight,BoardWidth,ResultDirtiness,ObstaclesEnv,ResultChilds,Corral,Robot).
