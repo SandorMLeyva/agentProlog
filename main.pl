@@ -259,14 +259,36 @@ bfs(PathsQueue, N, M, Obstacles, GoalsList, Solution):-
 
 %=====================================================================+
 
-% Robot Agent:
+% ver que no pase por una casilla que tiene ninnos con un ninno ya cargado
+% camina el robot.
+robot1(BoardHeight,BoardWidth, Pos, Childs, Dirty,Obstacles, ChildsResult, DirtyResult, NewPos):-
+	member(Pos, Dirty),
+	delete(Dirty, Pos, DirtyResult),
+	NewPos = Pos,
+	ChildsResult = Result,!.
 
-should_drop(Corrals, Position, [drop]):-member(Position, Corrals).
-should_drop(Corrals, Position, []):-not(member(Position, Corrals)).
+%si bfs da falso es que no hay camino
+robot1(BoardHeight,BoardWidth, Pos, Childs, Dirty,Obstacles, ChildsResult, DirtyResult, NewPos):-
+	bfs([[Pos]], BoardHeight, BoardWidth, Obstacles, Dirty, Path),
+	length(Path, L),
+	L >=1,
+	nth0(0, Path, NewPos),
+	DirtyResult= Dirty,
+	ChildsResult= Childs.
+
+
+	
+%simulation(BoardHeight,BoardWidth, Pos, Childs, Dirty,Obstacles):-
 
 
 
 
+
+	
+	
+
+
+%	bfs([[[0, 1]]], BoardHeight, BoardWidth, [[1,1],[2,2],[3,3],[4,1],[5,1],[6,1]], [[5,5]], Path),
 
 
 main:-
