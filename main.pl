@@ -296,7 +296,6 @@ moveChild(BoardHeight, BoardWidth, [X,Y],Dirty,Childs,Corral, Obstacles, ResultO
 	append([[X1,Y1]], List2, ResultChilds),!.
 	
 
-
 moveChild(BoardHeight, BoardWidth, [X,Y],Dirty,Childs,Corral, Obstacles, ResultObstacles, ResultChilds):-
 	sample([[1,0],[0,1],[-1,0],[0,-1],[1,1],[-1,-1],[1,-1],[-1,1]],[I,J]),
 	X1 is X+I,
@@ -310,49 +309,37 @@ moveChild(BoardHeight, BoardWidth, [X,Y],Dirty,Childs,Corral, Obstacles, ResultO
 	append([[X1,Y1]], List2, ResultChilds),!.
 
 
-
 moveChild(BoardHeight, BoardWidth, [X,Y],Dirty,Childs,Corral, Obstacles, ResultObstacles, ResultChilds):-
 	ResultObstacles = Obstacles,
 	ResultChilds = Childs.
-
 
 
 % aqui se esta partiendo en algun lugar
 itChilds(BoardHeight, BoardWidth, Length, Dirty,Obstacles, Childs,Corral, DirtyResult, ObstaclesResult, ChildsResult):-
 	Length > 0,
 	Pos is Length - 1,
-	writeln(Childs),		
+	writeln(Pos),
 	nth0(Pos, Childs, PosChild),
+	
+	itChilds(BoardHeight,BoardWidth, Pos, Dirty,Obstacles, Childs,Corral, DirtyResult2, ObstaclesResult2, ChildsResult2),
+	
 	%	ensucia
-	make_dirty(BoardHeight, BoardWidth, Dirty,Obstacles, PosChild, Childs, DirtyResult2),
-	writeln('++++++++++++DirtyResult2++++++++++++'),
-	writeln(DirtyResult2),
-	writeln('++++++++++++----------------------++++++++++++'),
-	append(DirtyResult2, Dirty, DirtyResult),
-	writeln(DirtyResult),
-	writeln('++++++++++++----------------------++++++++++++'),
+	make_dirty(BoardHeight, BoardWidth, DirtyResult2,ObstaclesResult2, PosChild, ChildsResult2, DirtyResult3),
+	append(DirtyResult3, DirtyResult2, DirtyResult),
 	%	mover
-	writeln(Childs),
-	moveChild(BoardHeight, BoardWidth, PosChild,DirtyResult3,Childs,Corral, Obstacles, ObstaclesResult, ChildsResult),
-	writeln('++++++++++++-----ChildsResult-------++++++++++++'),
-	writeln(ChildsResult).
-	% % writeln('Childs'),
-	% % writeln(Childs),
-	% %	proximo ninno
-	% itChilds(BoardHeight,BoardWidth, Pos, Dirty,ResultObstacles, ResultChilds,Corral, DirtyResult4, ObstaclesResult1, ChildsResult),
-	% writeln('+++++++++++++++++++++++++++Childs+++++++++++++++++++++++++'),		
-	% writeln('ChildsResult'),
-	% writeln(ChildsResult),
-	%union(ResultObstacles, Obstacles, ObstaclesResult),
-	% %union(ChildsResult1, Childs, ChildsResult),	
-	% union(DirtyResult3, DirtyResult4, DirtyResult), !.
+	moveChild(BoardHeight, BoardWidth, PosChild,DirtyResult,ChildsResult2,Corral, ObstaclesResult2, ObstaclesResult, ChildsResult),!.
+	
+	
 
 itChilds(BoardHeight, BoardWidth, Length, Dirty,Obstacles, Childs,Corral, DirtyResult, ObstaclesResult, ChildsResult):-
-	DirtyResult = Dirty,
-	ObstaclesResult = Obstacles,
-	writeln('+++++++++++++++++++++++++++Viene a ponerlo por defecto+++++++++++++++++++++++++'),		
-	writeln(Length),		
-	ChildsResult = Childs.
+	writeln(Length),	
+	nth0(Length, Childs, PosChild),
+	%	ensucia
+	make_dirty(BoardHeight, BoardWidth, Dirty,Obstacles, PosChild, Childs, DirtyResult2),
+	append(DirtyResult2, Dirty, DirtyResult),
+	%	mover
+	moveChild(BoardHeight, BoardWidth, PosChild,DirtyResult,Childs,Corral, Obstacles, ObstaclesResult, ChildsResult).
+	
 	
 
 	
@@ -360,23 +347,37 @@ itChilds(BoardHeight, BoardWidth, Length, Dirty,Obstacles, Childs,Corral, DirtyR
 
 child(BoardHeight,BoardWidth, Childs, Dirty,Obstacles,Corral, DirtyResult, ObstaclesResult, ChildsResult):-
 	length(Childs, L),	
-	write('hay'),
+	write('hay '),
 	write(L),
-	writeln('ninnos'),
+	writeln(' ninnos'),
 	itChilds(BoardHeight, BoardWidth, L, Dirty,Obstacles, Childs, Corral,DirtyResult, ObstaclesResult, ChildsResult).
 	
 	
 	
 	
-simulation(BoardHeight,BoardWidth, Pos, Childs, Dirty,Obstacles,CorralResult, DirtyResult, ObstaclesResult, ChildsResult3, NewPos):-
-	writeln('robot se va a mover'),
+simulation(BoardHeight,BoardWidth, Pos, Childs, Dirty,Obstacles,Corral, DirtyResult, ObstaclesResult, ChildsResult3, NewPos):-
+	% writeln('robot se va a mover'),
 	robot1(BoardHeight,BoardWidth, Pos, Childs, Dirty,Obstacles, ChildsResult, DirtyResult1, NewPos),
-	writeln('los ninnos se van a mover'),
-	% child(BoardHeight,BoardWidth, Childs, DirtyResult1,Obstacles,CorralResult, DirtyResult, ObstaclesResult, ChildsResult).
-	nth0(0, ChildsResult, PosChild),
-	make_dirty(BoardHeight, BoardWidth, DirtyResult1,Obstacles, PosChild, ChildsResult, DirtyResult2),
-	append(DirtyResult2, DirtyResult1, DirtyResult),	
-	moveChild(BoardHeight, BoardWidth, PosChild,DirtyResult,ChildsResult,CorralResult, Obstacles, ObstaclesResult, ChildsResult3).
+	% writeln('los ninnos se van a mover'),
+	
+	% writeln('DirtyResult1'),
+	% writeln(DirtyResult1),
+	% writeln('Obstacles'),
+	% writeln(Obstacles),
+	% writeln('ChildsResult'),
+	% writeln(ChildsResult),
+
+	child(BoardHeight,BoardWidth, ChildsResult, DirtyResult1,Obstacles,Corral, DirtyResult, ObstaclesResult, ChildsResult3).
+	% writeln('DirtyResult'),
+	% writeln(DirtyResult),
+	% writeln('ObstaclesResult'),
+	% writeln(ObstaclesResult),
+	% writeln('ChildsResult3'),
+	% writeln(ChildsResult3).
+	% nth0(0, ChildsResult, PosChild),
+	% make_dirty(BoardHeight, BoardWidth, DirtyResult1,Obstacles, PosChild, ChildsResult, DirtyResult2),
+	% append(DirtyResult2, DirtyResult1, DirtyResult),	
+	% moveChild(BoardHeight, BoardWidth, PosChild,DirtyResult,ChildsResult,CorralResult, Obstacles, ObstaclesResult, ChildsResult3).
 	
 
 
