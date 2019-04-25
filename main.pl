@@ -223,9 +223,6 @@ inside_enviroment(X, Y, N, M):-
 	Y >= 0,Y < M.
 
 % temporary almost dirty definition
-is_very_dirty(Dirts, _, _, N, M):- 
-	length(Dirts, Size), 
-	N * M * 60 / 100 =< Size + N + M.
 
 %=====================================================================+
 
@@ -264,12 +261,10 @@ bfs(PathsQueue, N, M, Obstacles, GoalsList, Solution):-
 % camina el robot.
 robot1(BoardHeight,BoardWidth, Pos, Childs, Dirty,Obstacles, ChildsResult, DirtyResult, NewPos):-
 	member(Pos, Dirty),
-	writeln('se encontro suciedad en'),
-	writeln(Pos),
 	delete(Dirty, Pos, DirtyResult),
+	writeln('=====================================se limpio========================================'),
 	NewPos = Pos,
-	writeln('se queda en el mismo lugar'),
-	ChildsResult = Result,!.
+	ChildsResult = Childs,!.
 
 %si bfs da falso es que no hay camino
 robot1(BoardHeight,BoardWidth, Pos, Childs, Dirty,Obstacles, ChildsResult, DirtyResult, NewPos):-
@@ -318,12 +313,12 @@ moveChild(BoardHeight, BoardWidth, [X,Y],Dirty,Childs,Corral, Obstacles, ResultO
 itChilds(BoardHeight, BoardWidth, Length, Dirty,Obstacles, Childs,Corral, DirtyResult, ObstaclesResult, ChildsResult):-
 	Length > 0,
 	Pos is Length - 1,
-	writeln(Pos),
 	nth0(Pos, Childs, PosChild),
 	
 	itChilds(BoardHeight,BoardWidth, Pos, Dirty,Obstacles, Childs,Corral, DirtyResult2, ObstaclesResult2, ChildsResult2),
 	
 	%	ensucia
+	
 	make_dirty(BoardHeight, BoardWidth, DirtyResult2,ObstaclesResult2, PosChild, ChildsResult2, DirtyResult3),
 	append(DirtyResult3, DirtyResult2, DirtyResult),
 	%	mover
@@ -332,7 +327,6 @@ itChilds(BoardHeight, BoardWidth, Length, Dirty,Obstacles, Childs,Corral, DirtyR
 	
 
 itChilds(BoardHeight, BoardWidth, Length, Dirty,Obstacles, Childs,Corral, DirtyResult, ObstaclesResult, ChildsResult):-
-	writeln(Length),	
 	nth0(Length, Childs, PosChild),
 	%	ensucia
 	make_dirty(BoardHeight, BoardWidth, Dirty,Obstacles, PosChild, Childs, DirtyResult2),
@@ -342,44 +336,49 @@ itChilds(BoardHeight, BoardWidth, Length, Dirty,Obstacles, Childs,Corral, DirtyR
 	
 	
 
-	
-
-
 child(BoardHeight,BoardWidth, Childs, Dirty,Obstacles,Corral, DirtyResult, ObstaclesResult, ChildsResult):-
-	length(Childs, L),	
-	write('hay '),
-	write(L),
-	writeln(' ninnos'),
+	length(Childs, L),
 	itChilds(BoardHeight, BoardWidth, L, Dirty,Obstacles, Childs, Corral,DirtyResult, ObstaclesResult, ChildsResult).
 	
 	
-	
-	
-simulation(BoardHeight,BoardWidth, Pos, Childs, Dirty,Obstacles,Corral, DirtyResult, ObstaclesResult, ChildsResult3, NewPos):-
-	% writeln('robot se va a mover'),
+very_dirty(BoardHeight,BoardWidth,ChildsCount, CorralCount ,DirtinessCount,ObstacleCount):-
+	Free is (BoardHeight*BoardWidth) - (ChildsCount+ CorralCount + ObstacleCount),
+	A is (3/5)*Free,
+	A > DirtinessCount.
+
+
+simulation(BoardHeight,BoardWidth, I,T, Pos, Childs, Dirty,Obstacles,Corral, DirtyResult, ObstaclesResult, ChildsResult, NewPos):-
+	I < T,
+	CurrentT is I + 1,
+	writeln('====================+++Tiempo de simulacion+++++============================='),
+	writeln(CurrentT),
 	robot1(BoardHeight,BoardWidth, Pos, Childs, Dirty,Obstacles, ChildsResult, DirtyResult1, NewPos),
-	% writeln('los ninnos se van a mover'),
-	
-	% writeln('DirtyResult1'),
-	% writeln(DirtyResult1),
-	% writeln('Obstacles'),
-	% writeln(Obstacles),
-	% writeln('ChildsResult'),
-	% writeln(ChildsResult),
+	writeln('Nueva posicion'),
+	writeln(NewPos),
+	child(BoardHeight,BoardWidth, ChildsResult, DirtyResult1,Obstacles,Corral, DirtyResult, ObstaclesResult, ChildsResult2),
+	length(ChildsResult2, ChildsCount),
+	length(Corral, CorralCount),
+	length(DirtyResult, DirtinessCount),
+	length(ObstaclesResult, ObstacleCount),	
+	very_dirty(BoardHeight,BoardWidth,ChildsCount, CorralCount ,DirtinessCount,ObstacleCount),
+    simulation(BoardHeight,BoardWidth, CurrentT,T, NewPos, ChildsResult2, DirtyResult,ObstaclesResult,Corral, _, _, _, _),!.
 
-	child(BoardHeight,BoardWidth, ChildsResult, DirtyResult1,Obstacles,Corral, DirtyResult, ObstaclesResult, ChildsResult3).
-	% writeln('DirtyResult'),
-	% writeln(DirtyResult),
-	% writeln('ObstaclesResult'),
-	% writeln(ObstaclesResult),
-	% writeln('ChildsResult3'),
-	% writeln(ChildsResult3).
-	% nth0(0, ChildsResult, PosChild),
-	% make_dirty(BoardHeight, BoardWidth, DirtyResult1,Obstacles, PosChild, ChildsResult, DirtyResult2),
-	% append(DirtyResult2, DirtyResult1, DirtyResult),	
-	% moveChild(BoardHeight, BoardWidth, PosChild,DirtyResult,ChildsResult,CorralResult, Obstacles, ObstaclesResult, ChildsResult3).
 	
+% simulation(BoardHeight,BoardWidth, I, Pos, Childs, Dirty,Obstacles,Corral, DirtyResult, ObstaclesResult, ChildsResult3, NewPos):-
+% 	I < 100,
+% 	CurrentT is I + 1,
+% 	robot1(BoardHeight,BoardWidth, Pos, Childs, Dirty,Obstacles, ChildsResult, DirtyResult1, NewPos),
+% 	child(BoardHeight,BoardWidth, ChildsResult, DirtyResult1,Obstacles,Corral, DirtyResult, ObstaclesResult, ChildsResult3),
+% 	length(ChildsResult3, ChildsCount),
+% 	length(Corral, CorralCount),
+% 	length(DirtyResult, DirtinessCount),
+% 	length(ObstaclesResult, ObstacleCount),	
+% 	very_dirty(BoardHeight,BoardWidth,ChildsCount, CorralCount ,DirtinessCount,ObstacleCount),!.
 
+
+
+simulation(BoardHeight,BoardWidth, _ ,T,Pos, Childs, Dirty,Obstacles,Corral, DirtyResult, ObstaclesResult, ChildsResult3, NewPos):-
+	writeln('La simulacion finalizo, el robot no pudo con este ambiente').
 
 %	bfs([[[0, 1]]], BoardHeight, BoardWidth, [[1,1],[2,2],[3,3],[4,1],[5,1],[6,1]], [[5,5]], Path),
 
@@ -390,8 +389,8 @@ main:-
 	Time = 0,
 	TimeChange = 5,
 	ChildsCount = 5,
-	DirtinessPercent = 17,
-	ObstaclePercent = 10,
+	DirtinessPercent = 1,
+	ObstaclePercent = 2,
 	DirtinessCount is round((DirtinessPercent/100)*BoardHeight*BoardWidth),
 	ObstacleCount is round((ObstaclePercent/100)*BoardHeight*BoardWidth),
 	Dirty = [],
@@ -440,7 +439,7 @@ main:-
 	writeln('--------------+++++++-------------'),
 
 
-	simulation(BoardHeight,BoardWidth, Robot, ResultChilds, ResultDirtiness,ObstaclesEnv,CorralResult, DirtyResult, ObstaclesResult, ChildsResult, NewPos),
+	simulation(BoardHeight,BoardWidth, 0,TimeChange,Robot, ResultChilds, ResultDirtiness,ObstaclesEnv,CorralResult, DirtyResult, ObstaclesResult, ChildsResult, NewPos),
 	
 	writeln('--------------despues-------------'),
 	writeln('Robot'),	
