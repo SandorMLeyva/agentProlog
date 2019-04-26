@@ -283,6 +283,26 @@ robot1(BoardHeight,BoardWidth, Pos, Childs, Dirty,Obstacles,Corral, ChildsResult
 %	Lleva los ninnos para el corral y si por el camino encuentra churre lo limpia
 %	Lleva ninno y se encuentra churre
 
+
+getIndex2_1(Path, NewPos):-
+	writeln(Path),
+	length(Path, L),	
+	L >= 3,nth0(2, Path, NewPos),
+	writeln(Path),
+	writeln('Se avanzo 2 pasos').
+	
+getIndex2_1(Path, NewPos):-
+	length(Path, L),		
+	L >= 2,nth0(1, Path, NewPos),
+	writeln(Path),
+	writeln('Se avanzo 1 pasos').
+	
+
+getIndex2_1(Path, NewPos):-
+	nth0(0, Path, NewPos),
+	writeln(Path),
+	writeln('Se avanzo 0 pasos').
+	
 % ++++++++++++++++PONER GLOBAL CUANDO ESTA CARGANDO A UN NINNO  y quitar el booleano de carrying feo+++++++++++++++++++
 
 :- dynamic(carrying/1).
@@ -300,7 +320,7 @@ robot2(BoardHeight,BoardWidth, Pos, Childs, Dirty,Obstacles,Corral, ChildsResult
 	append([Pos], Childs, ChildsResult),	
 	asserta(carrying(false)),
 	retract(carrying(true)),	
-	NewPos = Pos,!.
+	NewPos = Pos,writeln('no esta cargando ninno y hay un churre'),!.
 % no esta cargando ninno y hay un churre
 robot2(BoardHeight,BoardWidth, Pos, Childs, Dirty,Obstacles,Corral, ChildsResult, DirtyResult, NewPos):-
 	carrying(Carrying),
@@ -319,21 +339,25 @@ robot2(BoardHeight,BoardWidth, Pos, Childs, Dirty,Obstacles,Corral, ChildsResult
 	% PONER QUE ESTA CARGANDO NINNO
 	asserta(carrying(true)),
 	retract(carrying(false)),
-	NewPos = Pos,!.
+	NewPos = Pos,
+	writeln(' no esta cargando ninno , se encuentra uno y no hay churre'),!.
 %	esta cargando ninno y se encuentra un corral
 robot2(BoardHeight,BoardWidth, Pos, Childs, Dirty,Obstacles,Corral, ChildsResult, DirtyResult, NewPos):-
 	carrying(Carrying),
 	Carrying,
 	member(Pos, Corral),
 	asserta(inCorral(Pos)),
-	asserta(carrying(true)),
-	retract(carrying(false)),
+	asserta(carrying(false)),
+	retract(carrying(true)),
+	writeln('-----------------------------------------------------'),
+	writeln(Carrying),
 	countGlobalRobotChild(X),
 	X1 is X + 1,
 	asserta(countGlobalRobotChild(X1)),
 	retract(countGlobalRobotChild(X)),
 	NewPos = Pos,
-	ChildsResult = Childs,!.
+	ChildsResult = Childs,
+	writeln('esta cargando ninno y se encuentra un corral'),!.
 	% agrego al ninno a algu lugar donde tenga los ninnos en corral o corral ocupado
 	% Pongo que ya no estoy cargando un ninno
 
@@ -341,12 +365,21 @@ robot2(BoardHeight,BoardWidth, Pos, Childs, Dirty,Obstacles,Corral, ChildsResult
 robot2(BoardHeight,BoardWidth, Pos, Childs, Dirty,Obstacles,Corral, ChildsResult, DirtyResult, NewPos):-
 	carrying(Carrying),
 	Carrying,
+	writeln('+++Se va a hacer BFS ninno cargado y no hay suciedad, entonces se busca camino para corral+++'),
 	bfs([[Pos]], BoardHeight, BoardWidth, Obstacles, Corral, Path),
-	length(Path, L),
-	((L >=2,nth0(2, Path, NewPos));
-	(L >=1,nth0(1, Path, NewPos))),
+	% writeln('Pos'),
+	% writeln(Pos),
+	% writeln('Path'),
+	% writeln(Path),
+	% writeln('Corral'),
+	% writeln(Corral),
+	% writeln('+++Se termino+++'),
+	%	arreglar aqui++++++++++++++++++++++++++++++++++++++
+	getIndex2_1(Path,NewPos),
+	%	arreglar aqui++++++++++++++++++++++++++++++++++++++
 	DirtyResult= Dirty,
-	ChildsResult= Childs,!.
+	ChildsResult= Childs,
+	writeln('ninno cargado y no hay suciedad, entonces se busca camino para corral'),!.
 
 % sin ninno ni suciedad, busca ninno
 robot2(BoardHeight,BoardWidth, Pos, Childs, Dirty,Obstacles,Corral, ChildsResult, DirtyResult, NewPos):-
@@ -356,7 +389,8 @@ robot2(BoardHeight,BoardWidth, Pos, Childs, Dirty,Obstacles,Corral, ChildsResult
 	length(Path, L),
 	L >=1,nth0(1, Path, NewPos),
 	DirtyResult= Dirty,
-	ChildsResult= Childs.
+	ChildsResult= Childs,
+	writeln('sin ninno ni suciedad, busca ninno').
 
 %	Movimiento de los ninnos
 moveChild(BoardHeight, BoardWidth, [X,Y],Dirty,Childs,Corral, Obstacles, ResultObstacles, ResultChilds):-
@@ -466,7 +500,7 @@ simulation(BoardHeight,BoardWidth, I,T, Pos, Childs, Dirty,Obstacles,Corral, Dir
 	CurrentT is I + 1,
 	% writeln('====================+++Tiempo de simulacion+++++============================='),
 	not(all_clean(BoardHeight,BoardWidth, Childs, Dirty,Obstacles,Corral)),
-	robot1(BoardHeight,BoardWidth, Pos, Childs, Dirty,Obstacles,Corral, ChildsResult, DirtyResult1, NewPos),
+	robot2(BoardHeight,BoardWidth, Pos, Childs, Dirty,Obstacles,Corral, ChildsResult, DirtyResult1, NewPos),
 	child(BoardHeight,BoardWidth, ChildsResult, DirtyResult1,Obstacles,Corral, DirtyResult, ObstaclesResult, ChildsResult2),
 	length(ChildsResult2, ChildsCount),
 	length(Corral, CorralCount),
@@ -478,13 +512,16 @@ simulation(BoardHeight,BoardWidth, I,T, Pos, Childs, Dirty,Obstacles,Corral, Dir
 
 simulation(BoardHeight,BoardWidth, I,T, Pos, Childs, Dirty,Obstacles,Corral, DirtyResult, ObstaclesResult, ChildsResult, NewPos):-
 	countG(Current),
-	not(Current =:= 30),
+	not(Current =:= 100),
 	writeln('====================+++Nueva simulacion+++++============================='),
 	writeln(Current),
 	C is Current + 1,
 	GlobalC = countG(C),
 	retract(countG(Current)),	
 	asserta(GlobalC),
+	carrying(X),
+	retract(carrying(X)),
+	asserta(carrying(false)),
 	main,!.	
 % simulation(BoardHeight,BoardWidth, I, Pos, Childs, Dirty,Obstacles,Corral, DirtyResult, ObstaclesResult, ChildsResult3, NewPos):-
 
