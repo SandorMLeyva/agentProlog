@@ -287,21 +287,15 @@ robot1(BoardHeight,BoardWidth, Pos, Childs, Dirty,Obstacles,Corral, ChildsResult
 getIndex2_1(Path, NewPos):-
 	writeln(Path),
 	length(Path, L),	
-	L >= 3,nth0(2, Path, NewPos),
-	writeln(Path),
-	writeln('Se avanzo 2 pasos').
+	L >= 3,nth0(2, Path, NewPos),!.
 	
 getIndex2_1(Path, NewPos):-
 	length(Path, L),		
-	L >= 2,nth0(1, Path, NewPos),
-	writeln(Path),
-	writeln('Se avanzo 1 pasos').
+	L >= 2,nth0(1, Path, NewPos),!.
 	
 
 getIndex2_1(Path, NewPos):-
-	nth0(0, Path, NewPos),
-	writeln(Path),
-	writeln('Se avanzo 0 pasos').
+	nth0(0, Path, NewPos).
 	
 % ++++++++++++++++PONER GLOBAL CUANDO ESTA CARGANDO A UN NINNO  y quitar el booleano de carrying feo+++++++++++++++++++
 
@@ -333,8 +327,11 @@ robot2(BoardHeight,BoardWidth, Pos, Childs, Dirty,Obstacles,Corral, ChildsResult
 robot2(BoardHeight,BoardWidth, Pos, Childs, Dirty,Obstacles,Corral, ChildsResult, DirtyResult, NewPos):-
 	carrying(Carrying),
 	not(Carrying),
+	writeln('comprobando churre'),
 	not(member(Pos, Dirty)),
+	writeln('no hay churre'),
 	member(Pos, Childs),
+	writeln('hay ninno en esa posicion'),
 	delete(Childs, Pos, ChildsResult),
 	% PONER QUE ESTA CARGANDO NINNO
 	asserta(carrying(true)),
@@ -365,18 +362,10 @@ robot2(BoardHeight,BoardWidth, Pos, Childs, Dirty,Obstacles,Corral, ChildsResult
 robot2(BoardHeight,BoardWidth, Pos, Childs, Dirty,Obstacles,Corral, ChildsResult, DirtyResult, NewPos):-
 	carrying(Carrying),
 	Carrying,
-	writeln('+++Se va a hacer BFS ninno cargado y no hay suciedad, entonces se busca camino para corral+++'),
 	bfs([[Pos]], BoardHeight, BoardWidth, Obstacles, Corral, Path),
-	% writeln('Pos'),
-	% writeln(Pos),
-	% writeln('Path'),
-	% writeln(Path),
-	% writeln('Corral'),
-	% writeln(Corral),
-	% writeln('+++Se termino+++'),
-	%	arreglar aqui++++++++++++++++++++++++++++++++++++++
 	getIndex2_1(Path,NewPos),
-	%	arreglar aqui++++++++++++++++++++++++++++++++++++++
+	writeln(Path),
+	writeln(NewPos),
 	DirtyResult= Dirty,
 	ChildsResult= Childs,
 	writeln('ninno cargado y no hay suciedad, entonces se busca camino para corral'),!.
@@ -385,9 +374,11 @@ robot2(BoardHeight,BoardWidth, Pos, Childs, Dirty,Obstacles,Corral, ChildsResult
 robot2(BoardHeight,BoardWidth, Pos, Childs, Dirty,Obstacles,Corral, ChildsResult, DirtyResult, NewPos):-
 	carrying(Carrying),
 	not(Carrying),
-	bfs([[Pos]], BoardHeight, BoardWidth, Obstacles, Dirty, Path),
+	bfs([[Pos]], BoardHeight, BoardWidth, Obstacles, Childs, Path),
 	length(Path, L),
 	L >=1,nth0(1, Path, NewPos),
+	writeln(Path),
+	writeln(NewPos),
 	DirtyResult= Dirty,
 	ChildsResult= Childs,
 	writeln('sin ninno ni suciedad, busca ninno').
@@ -498,10 +489,11 @@ all_clean(BoardHeight,BoardWidth, Childs, Dirty,Obstacles,Corral):-
 simulation(BoardHeight,BoardWidth, I,T, Pos, Childs, Dirty,Obstacles,Corral, DirtyResult, ObstaclesResult, ChildsResult, NewPos):-
 	I < T,
 	CurrentT is I + 1,
-	% writeln('====================+++Tiempo de simulacion+++++============================='),
 	not(all_clean(BoardHeight,BoardWidth, Childs, Dirty,Obstacles,Corral)),
 	robot2(BoardHeight,BoardWidth, Pos, Childs, Dirty,Obstacles,Corral, ChildsResult, DirtyResult1, NewPos),
+	writeln('====================+++Tiempo de simulacion+++++============================='),
 	child(BoardHeight,BoardWidth, ChildsResult, DirtyResult1,Obstacles,Corral, DirtyResult, ObstaclesResult, ChildsResult2),
+	writeln(ChildsResult2),
 	length(ChildsResult2, ChildsCount),
 	length(Corral, CorralCount),
 	length(DirtyResult, DirtinessCount),
@@ -538,7 +530,7 @@ main:-
 	Time = 0,
 	TimeChange = 15,
 	ChildsCount = 20,
-	DirtinessPercent = 10,
+	DirtinessPercent = 0,
 	ObstaclePercent = 20,
 	DirtinessCount is round((DirtinessPercent/100)*BoardHeight*BoardWidth),
 	ObstacleCount is round((ObstaclePercent/100)*BoardHeight*BoardWidth),
