@@ -22,7 +22,6 @@ robot1(BoardHeight,BoardWidth, Pos, Childs, Dirty,Obstacles,Corral, ChildsResult
 
 
 getIndex2_1(Path, NewPos):-
-	writeln(Path),
 	length(Path, L),	
 	L >= 3,nth0(2, Path, NewPos),!.
 	
@@ -64,11 +63,11 @@ robot2(BoardHeight,BoardWidth, Pos, Childs, Dirty,Obstacles,Corral, ChildsResult
 robot2(BoardHeight,BoardWidth, Pos, Childs, Dirty,Obstacles,Corral, ChildsResult, DirtyResult, NewPos):-
 	carrying(Carrying),
 	not(Carrying),
-	writeln('comprobando churre'),
+	% writeln('comprobando churre'),
 	not(member(Pos, Dirty)),
-	writeln('no hay churre'),
+	% writeln('no hay churre'),
 	member(Pos, Childs),
-	writeln('hay ninno en esa posicion'),
+	% writeln('hay ninno en esa posicion'),
 	delete(Childs, Pos, ChildsResult),
 	% PONER QUE ESTA CARGANDO NINNO
 	asserta(carrying(true)),
@@ -83,8 +82,6 @@ robot2(BoardHeight,BoardWidth, Pos, Childs, Dirty,Obstacles,Corral, ChildsResult
 	asserta(inCorral(Pos)),
 	asserta(carrying(false)),
 	retract(carrying(true)),
-	writeln('-----------------------------------------------------'),
-	writeln(Carrying),
 	countGlobalRobotChild(X),
 	X1 is X + 1,
 	asserta(countGlobalRobotChild(X1)),
@@ -101,8 +98,6 @@ robot2(BoardHeight,BoardWidth, Pos, Childs, Dirty,Obstacles,Corral, ChildsResult
 	Carrying,
 	bfs([[Pos]], BoardHeight, BoardWidth, Obstacles, Corral, Path),
 	getIndex2_1(Path,NewPos),
-	writeln(Path),
-	writeln(NewPos),
 	DirtyResult= Dirty,
 	ChildsResult= Childs,
 	writeln('ninno cargado y no hay suciedad, entonces se busca camino para corral'),!.
@@ -114,8 +109,6 @@ robot2(BoardHeight,BoardWidth, Pos, Childs, Dirty,Obstacles,Corral, ChildsResult
 	bfs([[Pos]], BoardHeight, BoardWidth, Obstacles, Childs, Path),
 	length(Path, L),
 	L >=1,nth0(1, Path, NewPos),
-	writeln(Path),
-	writeln(NewPos),
 	DirtyResult= Dirty,
 	ChildsResult= Childs,
 	writeln('sin ninno ni suciedad, busca ninno').

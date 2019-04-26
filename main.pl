@@ -23,7 +23,7 @@ all_clean(BoardHeight,BoardWidth, Childs, Dirty,Obstacles,Corral):-
 	
 %	Reglas dinamicas
 :- dynamic(countG/1).
-countG(0).
+countG(1).
 
 
 
@@ -32,9 +32,8 @@ simulation(BoardHeight,BoardWidth, I,T, Pos, Childs, Dirty,Obstacles,Corral, Dir
 	CurrentT is I + 1,
 	not(all_clean(BoardHeight,BoardWidth, Childs, Dirty,Obstacles,Corral)),
 	robot2(BoardHeight,BoardWidth, Pos, Childs, Dirty,Obstacles,Corral, ChildsResult, DirtyResult1, NewPos),
-	writeln('====================+++Tiempo de simulacion+++++============================='),
 	child(BoardHeight,BoardWidth, ChildsResult, DirtyResult1,Obstacles,Corral, DirtyResult, ObstaclesResult, ChildsResult2),
-	writeln(ChildsResult2),
+	% writeln(ChildsResult2),
 	length(ChildsResult2, ChildsCount),
 	length(Corral, CorralCount),
 	length(DirtyResult, DirtinessCount),
@@ -45,9 +44,9 @@ simulation(BoardHeight,BoardWidth, I,T, Pos, Childs, Dirty,Obstacles,Corral, Dir
 
 simulation(BoardHeight,BoardWidth, I,T, Pos, Childs, Dirty,Obstacles,Corral, DirtyResult, ObstaclesResult, ChildsResult, NewPos):-
 	countG(Current),
-	not(Current =:= 10),
+	Current < 10,
 	writeln('====================+++Nueva simulacion+++++============================='),
-	writeln(Current),
+	% writeln(Current),
 	C is Current + 1,
 	GlobalC = countG(C),
 	retract(countG(Current)),	
@@ -55,6 +54,17 @@ simulation(BoardHeight,BoardWidth, I,T, Pos, Childs, Dirty,Obstacles,Corral, Dir
 	carrying(X),
 	retract(carrying(X)),
 	asserta(carrying(false)),
+	length(Dirty, Len),
+
+	%calculando porciento de casillas sucias
+	length(Obstacles, OInt),
+	length(Corral, CInt),
+	length(Childs, ChildInt),
+	
+	Total is (BoardHeight*BoardWidth)-(OInt+CInt+ChildInt),
+	Percent is 100*(Len/Total),
+
+	asserta(countGlobalDirty(Percent)),
 	main,!.	
 % simulation(BoardHeight,BoardWidth, I, Pos, Childs, Dirty,Obstacles,Corral, DirtyResult, ObstaclesResult, ChildsResult3, NewPos):-
 
@@ -69,14 +79,16 @@ main:-
 	BoardHeight = 15,
 	BoardWidth = 15,
 	TimeChange = 5,
-	ChildsCount = 20,
-	DirtinessPercent = 0,
+	ChildsCount = 10,
+	DirtinessPercent = 15,
 	ObstaclePercent = 20,
 	DirtinessCount is round((DirtinessPercent/100)*BoardHeight*BoardWidth),
 	ObstacleCount is round((ObstaclePercent/100)*BoardHeight*BoardWidth),
 	Dirty = [],
 	Obstacles = [],
 	Childs = [],
+
+
 	generate_pos(BoardHeight,BoardWidth,[],[],[],[],Corral),
 	generate_corral(BoardHeight, BoardWidth, ChildsCount, [Corral], CorralResult),
 	generate_obstacle(BoardHeight,BoardWidth,ObstacleCount,Dirty,Obstacles,Childs,CorralResult,ObstaclesEnv),

@@ -28,11 +28,7 @@ new_dirty(BoardHeight, BoardWidth, [X,Y],Pos):-
         X1 > -1, X1 < BoardWidth, Y1 > -1, Y1 < BoardHeight);
      (R =:= 7, X1 is X - 1, Y1 is Y+1,
         append([X1],[Y1],Pos),
-		X1 > -1, X1 < BoardWidth, Y1 > -1, Y1 < BoardHeight)),
-		countGlobalDirty(Current),
-		NewCurrent is Current + 1,
-		asserta(countGlobalDirty(NewCurrent)),
-		retract(countGlobalDirty(Current)),!.
+		X1 > -1, X1 < BoardWidth, Y1 > -1, Y1 < BoardHeight)),!.
 
 new_dirty(BoardHeight, BoardWidth, [X,Y],Pos):-
 	Pos = [].
@@ -128,8 +124,6 @@ move_obstacle(BoardHeight, BoardWidth, Dirty,Obstacles,Childs,Corral, [I,J], [X,
 	append([[X1,Y1]],Result4, Result),!.
 
 move_obstacle(BoardHeight, BoardWidth, Dirty,Obstacles,Childs,Corral, [I,J], [X,Y], Obstacles).
-
-
 
 
 moveChild(BoardHeight, BoardWidth, [X,Y],Dirty,Childs,Corral, Obstacles, ResultObstacles, ResultChilds):-
