@@ -1,3 +1,3 @@
 # Prolog
 
-Este es el mejor proyecto de prolog
+Agentes programados en `prolog`
