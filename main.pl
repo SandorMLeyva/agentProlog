@@ -79,6 +79,7 @@ generate_corral(BoardHeight, BoardWidth,0, Corrales, CorralResult) :-
 generate_corral(BoardHeight, BoardWidth,CorralCount, Corrales, CorralResult) :-
 	generate_corral(BoardHeight, BoardWidth,CorralCount, Corrales, CorralResult).
 
+%	genera una suciedad dado un punto
 new_dirty(BoardHeight, BoardWidth, [X,Y],Pos):-
 	%How to use
 	% new_dirty(BoardHeight,BoardWidth, [5,4], Pos),
@@ -107,18 +108,22 @@ new_dirty(BoardHeight, BoardWidth, [X,Y],Pos):-
         X1 > -1, X1 < BoardWidth, Y1 > -1, Y1 < BoardHeight);
      (R =:= 7, X1 is X - 1, Y1 is Y+1,
         append([X1],[Y1],Pos),
-        X1 > -1, X1 < BoardWidth, Y1 > -1, Y1 < BoardHeight)),!.
+		X1 > -1, X1 < BoardWidth, Y1 > -1, Y1 < BoardHeight)),
+		countGlobalDirty(Current),
+		NewCurrent is Current + 1,
+		retract(countGlobalDirty(Current)),
+		asserta(countGlobalDirty(NewCurrent)),!.
 
 new_dirty(BoardHeight, BoardWidth, [X,Y],Pos):-
 	Pos = [].
 
-
+%	Es como un member pero siempre retorna true
 inList(Item, List, R):-
 	member(Item, List), R is 1, !.	
 
 inList(Item, List, R):-
 	not(member(Item, List)), R is 0.
-
+%	Cuenta cuantos ninnos hay alrededor de un punto
 countChildsAround([X,Y], Childs, R):-
 	X1 is X + 1,
 	inList([X1,Y], Childs, R1),
@@ -262,7 +267,6 @@ bfs(PathsQueue, N, M, Obstacles, GoalsList, Solution):-
 robot1(BoardHeight,BoardWidth, Pos, Childs, Dirty,Obstacles, ChildsResult, DirtyResult, NewPos):-
 	member(Pos, Dirty),
 	delete(Dirty, Pos, DirtyResult),
-	writeln('=====================================se limpio========================================'),
 	NewPos = Pos,
 	ChildsResult = Childs,!.
 
@@ -340,54 +344,66 @@ child(BoardHeight,BoardWidth, Childs, Dirty,Obstacles,Corral, DirtyResult, Obsta
 	length(Childs, L),
 	itChilds(BoardHeight, BoardWidth, L, Dirty,Obstacles, Childs, Corral,DirtyResult, ObstaclesResult, ChildsResult).
 	
-	
+% 	Comprueba si esta sucio para despedir al robot, guarda con assert el contador global de despidos	
 very_dirty(BoardHeight,BoardWidth,ChildsCount, CorralCount ,DirtinessCount,ObstacleCount):-
 	Free is (BoardHeight*BoardWidth) - (ChildsCount+ CorralCount + ObstacleCount),
 	A is (3/5)*Free,
-	A > DirtinessCount.
+	A < DirtinessCount,
+	countGlobalRobotFired(Current),
+	NewCurrent is Current + 1,
+	retract(countGlobalRobotFired(Current)),
+	asserta(countGlobalRobotFired(NewCurrent)).
+	
 
+%	Reglas dinamicas
+:- dynamic(countG/1).
+countG(0).
+
+
+:- dynamic(countGlobalDirty/1).
+countGlobalDirty(0).
+:- dynamic(countGlobalRobotFired/1).
+countGlobalRobotFired(0).
+:- dynamic(countGlobalRobotChild/1).
+countGlobalRobotChild(0).
+:- dynamic(countGlobalRobotCleanHouse/1).
+countGlobalRobotCleanHouse(0).
 
 simulation(BoardHeight,BoardWidth, I,T, Pos, Childs, Dirty,Obstacles,Corral, DirtyResult, ObstaclesResult, ChildsResult, NewPos):-
 	I < T,
 	CurrentT is I + 1,
-	writeln('====================+++Tiempo de simulacion+++++============================='),
-	writeln(CurrentT),
+	% writeln('====================+++Tiempo de simulacion+++++============================='),
 	robot1(BoardHeight,BoardWidth, Pos, Childs, Dirty,Obstacles, ChildsResult, DirtyResult1, NewPos),
-	writeln('Nueva posicion'),
-	writeln(NewPos),
 	child(BoardHeight,BoardWidth, ChildsResult, DirtyResult1,Obstacles,Corral, DirtyResult, ObstaclesResult, ChildsResult2),
 	length(ChildsResult2, ChildsCount),
 	length(Corral, CorralCount),
 	length(DirtyResult, DirtinessCount),
 	length(ObstaclesResult, ObstacleCount),	
-	very_dirty(BoardHeight,BoardWidth,ChildsCount, CorralCount ,DirtinessCount,ObstacleCount),
+	not(very_dirty(BoardHeight,BoardWidth,ChildsCount, CorralCount ,DirtinessCount,ObstacleCount)),
     simulation(BoardHeight,BoardWidth, CurrentT,T, NewPos, ChildsResult2, DirtyResult,ObstaclesResult,Corral, _, _, _, _),!.
 
-	
+simulation(BoardHeight,BoardWidth, I,T, Pos, Childs, Dirty,Obstacles,Corral, DirtyResult, ObstaclesResult, ChildsResult, NewPos):-
+	countG(Current),
+	not(Current =:= 100),
+	C is Current + 1,
+	GlobalC = countG(C),
+	retract(countG(Current)),	
+	asserta(GlobalC),
+	main,!.	
 % simulation(BoardHeight,BoardWidth, I, Pos, Childs, Dirty,Obstacles,Corral, DirtyResult, ObstaclesResult, ChildsResult3, NewPos):-
-% 	I < 100,
-% 	CurrentT is I + 1,
-% 	robot1(BoardHeight,BoardWidth, Pos, Childs, Dirty,Obstacles, ChildsResult, DirtyResult1, NewPos),
-% 	child(BoardHeight,BoardWidth, ChildsResult, DirtyResult1,Obstacles,Corral, DirtyResult, ObstaclesResult, ChildsResult3),
-% 	length(ChildsResult3, ChildsCount),
-% 	length(Corral, CorralCount),
-% 	length(DirtyResult, DirtinessCount),
-% 	length(ObstaclesResult, ObstacleCount),	
-% 	very_dirty(BoardHeight,BoardWidth,ChildsCount, CorralCount ,DirtinessCount,ObstacleCount),!.
 
-
-
-simulation(BoardHeight,BoardWidth, _ ,T,Pos, Childs, Dirty,Obstacles,Corral, DirtyResult, ObstaclesResult, ChildsResult3, NewPos):-
-	writeln('La simulacion finalizo, el robot no pudo con este ambiente').
+simulation(BoardHeight,BoardWidth, I ,T,Pos, Childs, Dirty,Obstacles,Corral, DirtyResult, ObstaclesResult, ChildsResult3, NewPos):-
+	writeln('La simulacion finalizo').
 
 %	bfs([[[0, 1]]], BoardHeight, BoardWidth, [[1,1],[2,2],[3,3],[4,1],[5,1],[6,1]], [[5,5]], Path),
+
 
 
 main:-
 	BoardHeight = 15,
 	BoardWidth = 15,
 	Time = 0,
-	TimeChange = 5,
+	TimeChange = 10,
 	ChildsCount = 5,
 	DirtinessPercent = 1,
 	ObstaclePercent = 2,
@@ -402,54 +418,6 @@ main:-
 	generate_dirty(BoardHeight,BoardWidth,DirtinessCount,Dirty,ObstaclesEnv,Childs,CorralResult,ResultDirtiness),
 	generate_childs(BoardHeight,BoardWidth,ChildsCount,ResultDirtiness,ObstaclesEnv,Childs,CorralResult,ResultChilds),
 	
-	%selecciona un ninno y lo para que ejecute la accion de ensuciar
-	%nth0(0, ResultChilds, Elem),
-	%make_dirty(BoardHeight, BoardWidth,ResultDirtiness,ObstaclesEnv, Elem, ResultChilds, DirtyResult),
-	%writeln(Elem),
-	%write(DirtyResult),
-
-
-	%bfs([[[0, 1]]], BoardHeight, BoardWidth, [[1,1],[2,2],[3,3],[4,1],[5,1],[6,1]], [[5,5]], Path),
-	%writeln(Path).
-
-
-
-	%move_obstacle(BoardHeight, BoardWidth, [],[[1,1],[2,2],[3,3],[4,1],[5,1],[6,1]],[],[], [1,1], [0,0], Result),
-	%writeln(Result).
-	
-
-	%generate_pos(BoardHeight,BoardWidth,ResultDirtiness,ObstaclesEnv,ResultChilds,Corral,Robot).
-	%Falta calcular los corrales
-	%write(ObstaclesEnv).
-
 	generate_pos(BoardHeight,BoardWidth,ResultDirtiness,ObstaclesEnv,ResultChilds,CorralResult,Robot),
-
-	
-	writeln('--------------antes-------------'),
-	writeln('Robot'),
-	writeln(Robot),
-	writeln('ResultDirtiness'),
-	writeln(ResultDirtiness),
-	writeln('ObstaclesEnv'),
-	writeln(ObstaclesEnv),
-	writeln('ResultChilds'),
-	writeln(ResultChilds),
-	writeln('CorralResult'),
-	writeln(CorralResult),
-	writeln('--------------+++++++-------------'),
-
-
-	simulation(BoardHeight,BoardWidth, 0,TimeChange,Robot, ResultChilds, ResultDirtiness,ObstaclesEnv,CorralResult, DirtyResult, ObstaclesResult, ChildsResult, NewPos),
-	
-	writeln('--------------despues-------------'),
-	writeln('Robot'),	
-	writeln(NewPos),
-	writeln('ResultDirtiness'),
-	writeln(DirtyResult),
-	writeln('ObstaclesEnv'),
-	writeln(ObstaclesResult),
-	writeln('ResultChilds'),
-	writeln(ChildsResult),
-	writeln('--------------+++++++-------------').
-
+	simulation(BoardHeight,BoardWidth, 0,TimeChange,Robot, ResultChilds, ResultDirtiness,ObstaclesEnv,CorralResult, DirtyResult, ObstaclesResult, ChildsResult, NewPos).
 	
