@@ -1,6 +1,4 @@
 
-% ver que no pase por una casilla que tiene ninnos con un ninno ya cargado
-% camina el robot.
 %	Este robot solo limpia el churre
 robot1(BoardHeight,BoardWidth, Pos, Childs, Dirty,Obstacles,Corral, ChildsResult, DirtyResult, NewPos):-
 	member(Pos, Dirty),
@@ -8,7 +6,6 @@ robot1(BoardHeight,BoardWidth, Pos, Childs, Dirty,Obstacles,Corral, ChildsResult
 	NewPos = Pos,
 	ChildsResult = Childs,!.
 
-%si bfs da falso es que no hay camino
 robot1(BoardHeight,BoardWidth, Pos, Childs, Dirty,Obstacles,Corral, ChildsResult, DirtyResult, NewPos):-
 	bfs([[Pos]], BoardHeight, BoardWidth, Obstacles, Dirty, Path),
 	length(Path, L),
@@ -17,9 +14,10 @@ robot1(BoardHeight,BoardWidth, Pos, Childs, Dirty,Obstacles,Corral, ChildsResult
 	DirtyResult= Dirty,
 	ChildsResult= Childs.
 
+% =====================nuevo robot===========================
+
 %	Lleva los ninnos para el corral y si por el camino encuentra churre lo limpia
 %	Lleva ninno y se encuentra churre
-
 
 getIndex2_1(Path, NewPos):-
 	length(Path, L),	
@@ -33,7 +31,6 @@ getIndex2_1(Path, NewPos):-
 getIndex2_1(Path, NewPos):-
 	nth0(0, Path, NewPos).
 	
-% ++++++++++++++++PONER GLOBAL CUANDO ESTA CARGANDO A UN NINNO  y quitar el booleano de carrying feo+++++++++++++++++++
 
 :- dynamic(carrying/1).
 carrying(false).

@@ -159,8 +159,7 @@ moveChild(BoardHeight, BoardWidth, [X,Y],Dirty,Childs,Corral, Obstacles, ResultO
 	ResultObstacles = Obstacles,
 	ResultChilds = Childs.
 
-
-% aqui se esta partiendo en algun lugar
+%	itera por cada ninno y para que haga su churre y movimientos correspondientes
 itChilds(BoardHeight, BoardWidth, Length, Dirty,Obstacles, Childs,Corral, DirtyResult, ObstaclesResult, ChildsResult):-
 	Length > 0,
 	Pos is Length - 1,

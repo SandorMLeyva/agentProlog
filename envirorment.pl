@@ -1,3 +1,4 @@
+%	genera una posicion aleatoria sobre el mapa que no coincida con ninguno de los parametros
 generate_pos(BoardHeight,BoardWidth,Dirty,Obstacles,Childs,Corral,Pos):-
 	A is random(BoardHeight),
 	B is random(BoardWidth),
@@ -10,6 +11,7 @@ generate_pos(BoardHeight,BoardWidth,Dirty,Obstacles,Childs,Corral,Pos):-
 generate_pos(BoardHeight,BoardWidth,Dirty,Obstacles,Childs,Corral,Pos):-
 		generate_pos(BoardHeight,BoardWidth,Dirty,Obstacles,Childs,Corral,Pos).
 
+%	genera un obstaculo sobre el mapa
 generate_obstacle(BoardHeight,BoardWidth,ObstacleCount,Dirty,Obstacles,Childs,Corral,ResultObstacles):-
 	ObstacleCount > 0,
 	X is ObstacleCount-1,
@@ -43,6 +45,7 @@ generate_childs(BoardHeight,BoardWidth,ChildsCount,Dirty,Obstacles,Childs,Corral
 generate_childs(BoardHeight,BoardWidth,0,Dirty,Obstacles,Childs,Corral,ResultChilds):- 
 	ResultChilds = Childs.
 
+%	toma un valor aleatorio de una lista
 sample(L, R) :- 
 	length(L, Len), 
 	random(0, Len, Random), 
