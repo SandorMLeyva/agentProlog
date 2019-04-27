@@ -72,16 +72,38 @@ simulation(BoardHeight,BoardWidth, I ,T,Pos, Childs, Dirty,Obstacles,Corral, Dir
 	writeln('La simulacion finalizo').
 
 
+:-dynamic(bh/1).
+:-dynamic(bw/1).
+:-dynamic(time/1).
+:-dynamic(child_count/1).
+:-dynamic(dirtiness_percent/1).
+:-dynamic(obstacle_percent/1).
+
+init:-
+	writeln('Board Heigth'),read(Heigth),
+	assert(bh(Heigth)),
+	writeln('Board Width'),read(Width),
+	assert(bw(Width)),	
+	writeln('Time'), read(Time),
+	assert(time(Time)),
+	writeln('Childs Count'), read(ChildsCount),
+	assert(child_count(ChildsCount)),
+	writeln('Dirtiness Percent'), read(DirtinessPercent),
+	assert(dirtiness_percent(DirtinessPercent)),
+	writeln('Obstacle Percent'), read(ObstaclePercent),
+	assert(obstacle_percent(ObstaclePercent)),
+	main.
+
+
 
 main:-
 	consult(['stats.pl','envirorment.pl','bfs.pl','robot.pl','child.pl']),
-
-	BoardHeight = 15,
-	BoardWidth = 15,
-	TimeChange = 5,
-	ChildsCount = 10,
-	DirtinessPercent = 15,
-	ObstaclePercent = 20,
+	bh(BoardHeight),
+	bw(BoardWidth),
+	time(TimeChange),
+	child_count(ChildsCount),
+	dirtiness_percent(DirtinessPercent),
+	obstacle_percent(ObstaclePercent),
 	DirtinessCount is round((DirtinessPercent/100)*BoardHeight*BoardWidth),
 	ObstacleCount is round((ObstaclePercent/100)*BoardHeight*BoardWidth),
 	Dirty = [],
