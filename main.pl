@@ -44,7 +44,7 @@ simulation(BoardHeight,BoardWidth, I,T, Pos, Childs, Dirty,Obstacles,Corral, Dir
 
 simulation(BoardHeight,BoardWidth, I,T, Pos, Childs, Dirty,Obstacles,Corral, DirtyResult, ObstaclesResult, ChildsResult, NewPos):-
 	countG(Current),
-	Current < 10,
+	Current < 5,
 	writeln('====================+++Nueva simulacion+++++============================='),
 	% writeln(Current),
 	C is Current + 1,
@@ -78,9 +78,9 @@ main:-
 
 	BoardHeight = 15,
 	BoardWidth = 15,
-	TimeChange = 5,
-	ChildsCount = 10,
-	DirtinessPercent = 15,
+	TimeChange = 25,
+	ChildsCount = 1,
+	DirtinessPercent = 0,
 	ObstaclePercent = 20,
 	DirtinessCount is round((DirtinessPercent/100)*BoardHeight*BoardWidth),
 	ObstacleCount is round((ObstaclePercent/100)*BoardHeight*BoardWidth),

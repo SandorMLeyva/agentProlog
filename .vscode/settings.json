@@ -1,0 +1,7 @@
+{
+    "python.pythonPath": "C:\\Anaconda3\\python.exe",
+    "prolog.linter.run": "never",
+    "prolog.executablePath": "C:\\Program Files\\swipl\\bin\\swipl.exe",
+    "prolog.format.enabled": false,
+    "prolog.linter.enableMsgInOutput": false
+}
