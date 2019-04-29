@@ -44,7 +44,7 @@ simulation(BoardHeight,BoardWidth, I,T, Pos, Childs, Dirty,Obstacles,Corral, Dir
 
 simulation(BoardHeight,BoardWidth, _,_, _, Childs, Dirty,Obstacles,Corral, _, _, _, _):-
 	countG(Current),
-	Current < 100,
+	Current < 2,
 	writeln('====================+++Nueva simulacion+++++============================='),
 	% writeln(Current),
 	C is Current + 1,
