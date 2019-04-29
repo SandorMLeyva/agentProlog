@@ -98,3 +98,9 @@ main:-
 	generate_pos(BoardHeight,BoardWidth,ResultDirtiness,ObstaclesEnv,ResultChilds,CorralResult,Robot),
 	simulation(BoardHeight,BoardWidth, 0,TimeChange,Robot, ResultChilds, ResultDirtiness,ObstaclesEnv,CorralResult, DirtyResult, ObstaclesResult, ChildsResult, NewPos).
 	
+iter(X):-
+	X < 30,
+	X1 is X + 1,
+	main,
+	summarypy,
+	iter(X1).

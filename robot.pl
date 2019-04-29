@@ -83,9 +83,9 @@ robot2(BoardHeight,BoardWidth, Pos, Childs, Dirty,Obstacles,Corral, ChildsResult
 	asserta(carrying(false)),
 	retract(carrying(true)),
 	countGlobalRobotChild(X),
+	retract(countGlobalRobotChild(X)),
 	X1 is X + 1,
 	asserta(countGlobalRobotChild(X1)),
-	retract(countGlobalRobotChild(X)),
 	NewPos = Pos,
 	ChildsResult = Childs,
 	writeln('esta cargando ninno y se encuentra un corral'),!.
