@@ -138,7 +138,6 @@ moveChild(BoardHeight, BoardWidth, [X,Y],Dirty,Childs,Corral, Obstacles, ResultO
 	member([X1,Y1], Obstacles),
 	move_obstacle(BoardHeight, BoardWidth, Dirty,Obstacles,Childs,Corral, [I,J], [X1,Y1], ResultObstacles),
 	delete(Childs, [X,Y], List2),
-	% ResultChilds = [],
 	append([[X1,Y1]], List2, ResultChilds),!.
 	
 
@@ -155,27 +154,26 @@ moveChild(BoardHeight, BoardWidth, [X,Y],_,Childs,_, Obstacles, ResultObstacles,
 	append([[X1,Y1]], List2, ResultChilds),!.
 
 
-moveChild(_, _, [_,_],_,Childs,_, Obstacles, ResultObstacles, ResultChilds):-
+moveChild(_, _, _,_,Childs,_, Obstacles, ResultObstacles, ResultChilds):-
 	ResultObstacles = Obstacles,
 	ResultChilds = Childs.
 
-%	itera por cada ninno y para que haga su churre y movimientos correspondientes
+
 itChilds(BoardHeight, BoardWidth, Length, Dirty,Obstacles, Childs,Corral, DirtyResult, ObstaclesResult, ChildsResult):-
 	Length > 0,
 	Pos is Length - 1,
-	nth0(Pos, Childs, PosChild),
-	
-	itChilds(BoardHeight,BoardWidth, Pos, Dirty,Obstacles, Childs,Corral, DirtyResult2, ObstaclesResult2, ChildsResult2),
-	
+	nth0(Pos, Childs, PosChild),	
+	% writeln('entro a la recursividad con'),
+	% writeln(Childs),
+	% writeln('salio de la recursividad con'),
+	% writeln(ChildsResult2),
 	%	ensucia
-	
-	make_dirty(BoardHeight, BoardWidth, DirtyResult2,ObstaclesResult2, PosChild, ChildsResult2, DirtyResult3),
-	append(DirtyResult3, DirtyResult2, DirtyResult),
+	make_dirty(BoardHeight, BoardWidth, Dirty,Obstacles, PosChild, Childs, DirtyResult2),
+	append(DirtyResult2, Dirty, DirtyResult3),
 	%	mover
-	moveChild(BoardHeight, BoardWidth, PosChild,DirtyResult,ChildsResult2,Corral, ObstaclesResult2, ObstaclesResult, ChildsResult),!.
+	moveChild(BoardHeight, BoardWidth, PosChild,DirtyResult3,Childs,Corral, Obstacles, ObstaclesResult1, ChildsResult2),
+	itChilds(BoardHeight,BoardWidth, Pos, DirtyResult3,ObstaclesResult1, ChildsResult2,Corral, DirtyResult, ObstaclesResult, ChildsResult),!.
 	
-	
-
 itChilds(BoardHeight, BoardWidth, Length, Dirty,Obstacles, Childs,Corral, DirtyResult, ObstaclesResult, ChildsResult):-
 	nth0(Length, Childs, PosChild),
 	%	ensucia

@@ -31,9 +31,10 @@ simulation(BoardHeight,BoardWidth, I,T, Pos, Childs, Dirty,Obstacles,Corral, Dir
 	I < T,
 	CurrentT is I + 1,
 	not(all_clean(BoardHeight,BoardWidth, Childs, Dirty,Obstacles,Corral)),
-	robot2(BoardHeight,BoardWidth, Pos, Childs, Dirty,Obstacles,Corral, ChildsResult, DirtyResult1, NewPos),
+	robot1(BoardHeight,BoardWidth, Pos, Childs, Dirty,Obstacles,Corral, ChildsResult, DirtyResult1, NewPos),
 	child(BoardHeight,BoardWidth, ChildsResult, DirtyResult1,Obstacles,Corral, DirtyResult, ObstaclesResult, ChildsResult2),
-	% writeln(ChildsResult2),
+	
+
 	length(ChildsResult2, ChildsCount),
 	length(Corral, CorralCount),
 	length(DirtyResult, DirtinessCount),
@@ -44,7 +45,7 @@ simulation(BoardHeight,BoardWidth, I,T, Pos, Childs, Dirty,Obstacles,Corral, Dir
 
 simulation(BoardHeight,BoardWidth, _,_, _, Childs, Dirty,Obstacles,Corral, _, _, _, _):-
 	countG(Current),
-	Current < 2,
+	Current < 100,
 	writeln('====================+++Nueva simulacion+++++============================='),
 	% writeln(Current),
 	C is Current + 1,
@@ -98,12 +99,14 @@ init:-
 
 main:-
 	consult(['stats.pl','envirorment.pl','bfs.pl','robot.pl','child.pl']),
-	bh(BoardHeight),
-	bw(BoardWidth),
-	time(TimeChange),
-	child_count(ChildsCount),
-	dirtiness_percent(DirtinessPercent),
-	obstacle_percent(ObstaclePercent),
+
+	BoardHeight = 9,
+	BoardWidth = 9,
+	TimeChange = 20,
+	ChildsCount = 0,
+	DirtinessPercent = 30,
+	ObstaclePercent = 30,
+
 	DirtinessCount is round((DirtinessPercent/100)*BoardHeight*BoardWidth),
 	ObstacleCount is round((ObstaclePercent/100)*BoardHeight*BoardWidth),
 	Dirty = [],
@@ -120,3 +123,9 @@ main:-
 	generate_pos(BoardHeight,BoardWidth,ResultDirtiness,ObstaclesEnv,ResultChilds,CorralResult,Robot),
 	simulation(BoardHeight,BoardWidth, 0,TimeChange,Robot, ResultChilds, ResultDirtiness,ObstaclesEnv,CorralResult, DirtyResult, ObstaclesResult, ChildsResult, NewPos).
 	
+iter(X):-
+	X < 30,
+	X1 is X + 1,
+	main,
+	csv,
+	iter(X1).

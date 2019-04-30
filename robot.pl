@@ -6,6 +6,7 @@ robot1(_,_, Pos, Childs, Dirty,_,_, ChildsResult, DirtyResult, NewPos):-
 	NewPos = Pos,
 	ChildsResult = Childs,!.
 
+%si bfs da falso es que no hay camino
 robot1(BoardHeight,BoardWidth, Pos, Childs, Dirty,Obstacles,_, ChildsResult, DirtyResult, NewPos):-
 	bfs([[Pos]], BoardHeight, BoardWidth, Obstacles, Dirty, Path),
 	length(Path, L),
@@ -47,7 +48,9 @@ robot2(_,_, Pos, Childs, Dirty,_,_, ChildsResult, _, NewPos):-
 	append([Pos], Childs, ChildsResult),	
 	asserta(carrying(false)),
 	retract(carrying(true)),	
-	NewPos = Pos,writeln('no esta cargando ninno y hay un churre'),!.
+	NewPos = Pos,
+	writeln('esta cargando ninno y hay un churre'),!.
+
 % no esta cargando ninno y hay un churre
 robot2(_,_, Pos, Childs, Dirty,_,_, ChildsResult, DirtyResult, NewPos):-
 	carrying(Carrying),
@@ -55,7 +58,9 @@ robot2(_,_, Pos, Childs, Dirty,_,_, ChildsResult, DirtyResult, NewPos):-
 	member(Pos, Dirty),
 	delete(Dirty, Pos, DirtyResult),
 	NewPos = Pos,
-	ChildsResult = Childs,!.
+	ChildsResult = Childs,
+	writeln('no esta cargando ninno y hay un churre'),!.
+
 % no esta cargando ninno , se encuentra uno y no hay churre
 robot2(_,_, Pos, Childs, Dirty,_,_, ChildsResult, _, NewPos):-
 	carrying(Carrying),
@@ -67,8 +72,8 @@ robot2(_,_, Pos, Childs, Dirty,_,_, ChildsResult, _, NewPos):-
 	% writeln('hay ninno en esa posicion'),
 	delete(Childs, Pos, ChildsResult),
 	% PONER QUE ESTA CARGANDO NINNO
+	retractall(carrying(_)),
 	asserta(carrying(true)),
-	retract(carrying(false)),
 	NewPos = Pos,
 	writeln(' no esta cargando ninno , se encuentra uno y no hay churre'),!.
 %	esta cargando ninno y se encuentra un corral
@@ -77,12 +82,12 @@ robot2(_,_, Pos, Childs, _,_,Corral, ChildsResult, _, NewPos):-
 	Carrying,
 	member(Pos, Corral),
 	asserta(inCorral(Pos)),
+	retractall(carrying(_)),
 	asserta(carrying(false)),
-	retract(carrying(true)),
 	countGlobalRobotChild(X),
+	retract(countGlobalRobotChild(X)),
 	X1 is X + 1,
 	asserta(countGlobalRobotChild(X1)),
-	retract(countGlobalRobotChild(X)),
 	NewPos = Pos,
 	ChildsResult = Childs,
 	writeln('esta cargando ninno y se encuentra un corral'),!.
