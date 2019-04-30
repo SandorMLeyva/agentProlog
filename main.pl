@@ -45,7 +45,7 @@ simulation(BoardHeight,BoardWidth, I,T, Pos, Childs, Dirty,Obstacles,Corral, Dir
 
 simulation(BoardHeight,BoardWidth, _,_, _, Childs, Dirty,Obstacles,Corral, _, _, _, _):-
 	countG(Current),
-	Current < 5,
+	Current < 100,
 	writeln('====================+++Nueva simulacion+++++============================='),
 	% writeln(Current),
 	C is Current + 1,
@@ -100,7 +100,7 @@ main:-
 	simulation(BoardHeight,BoardWidth, 0,TimeChange,Robot, ResultChilds, ResultDirtiness,ObstaclesEnv,CorralResult, DirtyResult, ObstaclesResult, ChildsResult, NewPos).
 	
 iter(X):-
-	X < 2,
+	X < 30,
 	X1 is X + 1,
 	main,
 	csv,
