@@ -31,7 +31,7 @@ simulation(BoardHeight,BoardWidth, I,T, Pos, Childs, Dirty,Obstacles,Corral, Dir
 	I < T,
 	CurrentT is I + 1,
 	not(all_clean(BoardHeight,BoardWidth, Childs, Dirty,Obstacles,Corral)),
-	robot2(BoardHeight,BoardWidth, Pos, Childs, Dirty,Obstacles,Corral, ChildsResult, DirtyResult1, NewPos),
+	robot1(BoardHeight,BoardWidth, Pos, Childs, Dirty,Obstacles,Corral, ChildsResult, DirtyResult1, NewPos),
 	child(BoardHeight,BoardWidth, ChildsResult, DirtyResult1,Obstacles,Corral, DirtyResult, ObstaclesResult, ChildsResult2),
 	
 
@@ -77,12 +77,13 @@ simulation(_,_, _ ,_,_, _, _,_,_, _, _, _, _):-
 main:-
 	consult(['stats.pl','envirorment.pl','bfs.pl','robot.pl','child.pl']),
 
-	BoardHeight = 15,
-	BoardWidth = 15,
+	BoardHeight = 9,
+	BoardWidth = 9,
 	TimeChange = 20,
-	ChildsCount = 15,
-	DirtinessPercent = 10,
+	ChildsCount = 0,
+	DirtinessPercent = 30,
 	ObstaclePercent = 30,
+
 	DirtinessCount is round((DirtinessPercent/100)*BoardHeight*BoardWidth),
 	ObstacleCount is round((ObstaclePercent/100)*BoardHeight*BoardWidth),
 	Dirty = [],
