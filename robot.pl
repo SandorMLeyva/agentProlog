@@ -50,7 +50,8 @@ robot2(_,_, Pos, Childs, Dirty,_,_, ChildsResult, _, NewPos):-
 	append([Pos], Childs, ChildsResult),	
 	asserta(carrying(false)),
 	retract(carrying(true)),	
-	NewPos = Pos,writeln('no esta cargando ninno y hay un churre'),!.
+	NewPos = Pos,!.
+	% writeln('no esta cargando ninno y hay un churre'),!.
 % no esta cargando ninno y hay un churre
 robot2(_,_, Pos, Childs, Dirty,_,_, ChildsResult, DirtyResult, NewPos):-
 	carrying(Carrying),
@@ -67,28 +68,33 @@ robot2(_,_, Pos, Childs, Dirty,_,_, ChildsResult, _, NewPos):-
 	not(member(Pos, Dirty)),
 	% writeln('no hay churre'),
 	member(Pos, Childs),
+	writeln(Childs),
+	writeln(ChildsResult),
 	% writeln('hay ninno en esa posicion'),
 	delete(Childs, Pos, ChildsResult),
 	% PONER QUE ESTA CARGANDO NINNO
 	asserta(carrying(true)),
 	retract(carrying(false)),
-	NewPos = Pos,
-	writeln(' no esta cargando ninno , se encuentra uno y no hay churre'),!.
+	NewPos = Pos,!.
+	% writeln(' no esta cargando ninno , se encuentra uno y no hay churre'),!.
 %	esta cargando ninno y se encuentra un corral
 robot2(_,_, Pos, Childs, _,_,Corral, ChildsResult, _, NewPos):-
 	carrying(Carrying),
 	Carrying,
 	member(Pos, Corral),
 	asserta(inCorral(Pos)),
+	retractall(carrying(_)),
 	asserta(carrying(false)),
-	retract(carrying(true)),
+	writeln('==========================================================================='),
+	writeln(Childs),
+	writeln('==========================================================================='),
 	countGlobalRobotChild(X),
 	retract(countGlobalRobotChild(X)),
 	X1 is X + 1,
 	asserta(countGlobalRobotChild(X1)),
 	NewPos = Pos,
-	ChildsResult = Childs,
-	writeln('esta cargando ninno y se encuentra un corral'),!.
+	ChildsResult = Childs,!.
+	% writeln('esta cargando ninno y se encuentra un corral'),!.
 	% agrego al ninno a algu lugar donde tenga los ninnos en corral o corral ocupado
 	% Pongo que ya no estoy cargando un ninno
 
@@ -99,8 +105,8 @@ robot2(BoardHeight,BoardWidth, Pos, Childs, Dirty,Obstacles,Corral, ChildsResult
 	bfs([[Pos]], BoardHeight, BoardWidth, Obstacles, Corral, Path),
 	getIndex2_1(Path,NewPos),
 	DirtyResult= Dirty,
-	ChildsResult= Childs,
-	writeln('ninno cargado y no hay suciedad, entonces se busca camino para corral'),!.
+	ChildsResult= Childs,!.
+	% writeln('ninno cargado y no hay suciedad, entonces se busca camino para corral'),!.
 
 % sin ninno ni suciedad, busca ninno
 robot2(BoardHeight,BoardWidth, Pos, Childs, Dirty,Obstacles,_, ChildsResult, DirtyResult, NewPos):-
@@ -110,7 +116,7 @@ robot2(BoardHeight,BoardWidth, Pos, Childs, Dirty,Obstacles,_, ChildsResult, Dir
 	length(Path, L),
 	L >=1,nth0(1, Path, NewPos),
 	DirtyResult= Dirty,
-	ChildsResult= Childs,
-	writeln('sin ninno ni suciedad, busca ninno').
+	ChildsResult= Childs.
+	% writeln('sin ninno ni suciedad, busca ninno').
 
 %	Movimiento de los ninnos

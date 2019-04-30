@@ -138,8 +138,16 @@ moveChild(BoardHeight, BoardWidth, [X,Y],Dirty,Childs,Corral, Obstacles, ResultO
 	member([X1,Y1], Obstacles),
 	move_obstacle(BoardHeight, BoardWidth, Dirty,Obstacles,Childs,Corral, [I,J], [X1,Y1], ResultObstacles),
 	delete(Childs, [X,Y], List2),
+	writeln('va a retornar en 1'),
+	% writeln('Se va a elminar'),
+	% writeln([X,Y]),
+	% writeln('Childs'),
+	% writeln(Childs),
+	% writeln('Result'),
+	% writeln(List2),
 	% ResultChilds = [],
-	append([[X1,Y1]], List2, ResultChilds),!.
+	append([[X1,Y1]], List2, ResultChilds),
+	writeln(ResultChilds),!.
 	
 
 moveChild(BoardHeight, BoardWidth, [X,Y],_,Childs,_, Obstacles, ResultObstacles, ResultChilds):-
@@ -152,10 +160,21 @@ moveChild(BoardHeight, BoardWidth, [X,Y],_,Childs,_, Obstacles, ResultObstacles,
 	not(member([X1,Y1], Obstacles)),
 	ResultObstacles = Obstacles,
 	delete(Childs, [X,Y], List2),
-	append([[X1,Y1]], List2, ResultChilds),!.
+	writeln('va a retornar en 2'),
+
+	writeln('Se va a elminar'),
+	writeln([X,Y]),
+	writeln('Childs'),
+	writeln(Childs),
+	writeln('Result'),
+	writeln(List2),
+
+	append([[X1,Y1]], List2, ResultChilds),
+	writeln(ResultChilds),!.
 
 
-moveChild(_, _, [_,_],_,Childs,_, Obstacles, ResultObstacles, ResultChilds):-
+moveChild(_, _, _,_,Childs,_, Obstacles, ResultObstacles, ResultChilds):-
+	writeln('Se quedan los ninno como estaban'),
 	ResultObstacles = Obstacles,
 	ResultChilds = Childs.
 
@@ -164,15 +183,20 @@ moveChild(_, _, [_,_],_,Childs,_, Obstacles, ResultObstacles, ResultChilds):-
 itChilds(BoardHeight, BoardWidth, Length, Dirty,Obstacles, Childs,Corral, DirtyResult, ObstaclesResult, ChildsResult):-
 	Length > 0,
 	Pos is Length - 1,
-	nth0(Pos, Childs, PosChild),
-	
-	itChilds(BoardHeight,BoardWidth, Pos, Dirty,Obstacles, Childs,Corral, DirtyResult2, ObstaclesResult2, ChildsResult2),
-	
+	nth0(Pos, Childs, PosChild),	
+	writeln('entro a la recursividad con'),
+	writeln(Childs),
+	itChilds(BoardHeight,BoardWidth, Pos, Dirty,Obstacles, Childs,Corral, DirtyResult2, ObstaclesResult2, ChildsResult2),	
+	writeln('salio de la recursividad con'),
+	writeln(ChildsResult2),
 	%	ensucia
-	
 	make_dirty(BoardHeight, BoardWidth, DirtyResult2,ObstaclesResult2, PosChild, ChildsResult2, DirtyResult3),
 	append(DirtyResult3, DirtyResult2, DirtyResult),
 	%	mover
+	writeln('========SE TOMO=========1'),
+	writeln(PosChild),
+	writeln('========DE========='),
+	writeln(ChildsResult2),
 	moveChild(BoardHeight, BoardWidth, PosChild,DirtyResult,ChildsResult2,Corral, ObstaclesResult2, ObstaclesResult, ChildsResult),!.
 	
 	
@@ -183,11 +207,17 @@ itChilds(BoardHeight, BoardWidth, Length, Dirty,Obstacles, Childs,Corral, DirtyR
 	make_dirty(BoardHeight, BoardWidth, Dirty,Obstacles, PosChild, Childs, DirtyResult2),
 	append(DirtyResult2, Dirty, DirtyResult),
 	%	mover
+	writeln('========SE TOMO=========2'),
+	writeln(PosChild),
+	writeln('========DE========='),
+	writeln(Childs),
 	moveChild(BoardHeight, BoardWidth, PosChild,DirtyResult,Childs,Corral, Obstacles, ObstaclesResult, ChildsResult).
 	
 	
 
 child(BoardHeight,BoardWidth, Childs, Dirty,Obstacles,Corral, DirtyResult, ObstaclesResult, ChildsResult):-
 	length(Childs, L),
+	writeln('los ninnos se van amover y a ensuciar'),
+	writeln(Childs),
 	itChilds(BoardHeight, BoardWidth, L, Dirty,Obstacles, Childs, Corral,DirtyResult, ObstaclesResult, ChildsResult).
 	
