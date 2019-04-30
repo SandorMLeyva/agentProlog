@@ -18,7 +18,7 @@ generate_obstacle(BoardHeight,BoardWidth,ObstacleCount,Dirty,Obstacles,Childs,Co
 	generate_obstacle(BoardHeight,BoardWidth,X,Dirty,Result,Childs,Corral,Result2),
 	append([],Result2,ResultObstacles),!.
 
-generate_obstacle(BoardHeight,BoardWidth,0,Dirty,Obstacles,Childs,Corral,ResultObstacles):- 
+generate_obstacle(_,_,0,_,Obstacles,_,_,ResultObstacles):- 
 	ResultObstacles = Obstacles.
 			
 generate_dirty(BoardHeight,BoardWidth,DirtinessCount,Dirty,Obstacles,Childs,Corral,ResultDirtiness):-
@@ -29,7 +29,7 @@ generate_dirty(BoardHeight,BoardWidth,DirtinessCount,Dirty,Obstacles,Childs,Corr
 	generate_dirty(BoardHeight,BoardWidth,X,Result,Obstacles,Childs,Corral,Result2),
 	append([],Result2,ResultDirtiness),!.
 
-generate_dirty(BoardHeight,BoardWidth,0,Dirty,Obstacles,Childs,Corral,ResultDirtiness):- 
+generate_dirty(_,_,0,Dirty,_,_,_,ResultDirtiness):- 
 	ResultDirtiness = Dirty.
 
 generate_childs(BoardHeight,BoardWidth,ChildsCount,Dirty,Obstacles,Childs,Corral,ResultChilds):-
@@ -40,7 +40,7 @@ generate_childs(BoardHeight,BoardWidth,ChildsCount,Dirty,Obstacles,Childs,Corral
 	generate_childs(BoardHeight,BoardWidth,X,Dirty,Obstacles,Result,Corral,Result2),
 	append([],Result2,ResultChilds),!.
 
-generate_childs(BoardHeight,BoardWidth,0,Dirty,Obstacles,Childs,Corral,ResultChilds):- 
+generate_childs(_,_,0,_,_,Childs,_,ResultChilds):- 
 	ResultChilds = Childs.
 
 sample(L, R) :- 
@@ -73,7 +73,7 @@ generate_corral(BoardHeight, BoardWidth, CorralCount, Corrales, CorralResult) :-
 	append([],Result2,CorralResult),!.
 
 
-generate_corral(BoardHeight, BoardWidth,0, Corrales, CorralResult) :-
+generate_corral(_, _,0, Corrales, CorralResult) :-
 	CorralResult = Corrales.
 
 generate_corral(BoardHeight, BoardWidth,CorralCount, Corrales, CorralResult) :-

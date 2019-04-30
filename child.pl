@@ -30,7 +30,7 @@ new_dirty(BoardHeight, BoardWidth, [X,Y],Pos):-
         append([X1],[Y1],Pos),
 		X1 > -1, X1 < BoardWidth, Y1 > -1, Y1 < BoardHeight)),!.
 
-new_dirty(BoardHeight, BoardWidth, [X,Y],Pos):-
+new_dirty(_, _, _,Pos):-
 	Pos = [].
 
 %	Es como un member pero siempre retorna true
@@ -63,7 +63,7 @@ add_list_set(Dirty,Obstacles,Item,List,Result):-
 	not(member(Item, List)),
 	append([Item],List,Result).
 	
-add_list_set(Dirty,Obstacles, Item,List,R):-
+add_list_set(_,_, _,List,R):-
 	R = List.
 		
 dirty_result(BoardHeight, BoardWidth,Dirty,Obstacles,0, PosChild, DirtyResult):-
@@ -77,7 +77,7 @@ dirty_result(BoardHeight, BoardWidth,Dirty,Obstacles,1, PosChild, DirtyResult):-
 	add_list_set(Dirty,Obstacles,Pos1,[],DirtyResult1),
 	add_list_set(Dirty,Obstacles,Pos2,DirtyResult1,DirtyResult),!.
 
-dirty_result(BoardHeight, BoardWidth,Dirty,Obstacles,R, PosChild, DirtyResult):-
+dirty_result(BoardHeight, BoardWidth,Dirty,Obstacles,_, PosChild, DirtyResult):-
 	new_dirty(BoardHeight, BoardWidth, PosChild,Pos1),
 	new_dirty(BoardHeight, BoardWidth, PosChild,Pos2),
 	new_dirty(BoardHeight, BoardWidth, PosChild,Pos3),
@@ -123,7 +123,7 @@ move_obstacle(BoardHeight, BoardWidth, Dirty,Obstacles,Childs,Corral, [I,J], [X,
 	append(Result3,[], Result4),
 	append([[X1,Y1]],Result4, Result),!.
 
-move_obstacle(BoardHeight, BoardWidth, Dirty,Obstacles,Childs,Corral, [I,J], [X,Y], Obstacles).
+move_obstacle(_, _, _,Obstacles,_,_, [_,_], [_,_], Obstacles).
 
 
 moveChild(BoardHeight, BoardWidth, [X,Y],Dirty,Childs,Corral, Obstacles, ResultObstacles, ResultChilds):-
@@ -142,7 +142,7 @@ moveChild(BoardHeight, BoardWidth, [X,Y],Dirty,Childs,Corral, Obstacles, ResultO
 	append([[X1,Y1]], List2, ResultChilds),!.
 	
 
-moveChild(BoardHeight, BoardWidth, [X,Y],Dirty,Childs,Corral, Obstacles, ResultObstacles, ResultChilds):-
+moveChild(BoardHeight, BoardWidth, [X,Y],_,Childs,_, Obstacles, ResultObstacles, ResultChilds):-
 	sample([[1,0],[0,1],[-1,0],[0,-1],[1,1],[-1,-1],[1,-1],[-1,1]],[I,J]),
 	X1 is X+I,
 	Y1 is Y+J,
@@ -155,7 +155,7 @@ moveChild(BoardHeight, BoardWidth, [X,Y],Dirty,Childs,Corral, Obstacles, ResultO
 	append([[X1,Y1]], List2, ResultChilds),!.
 
 
-moveChild(BoardHeight, BoardWidth, [X,Y],Dirty,Childs,Corral, Obstacles, ResultObstacles, ResultChilds):-
+moveChild(_, _, [_,_],_,Childs,_, Obstacles, ResultObstacles, ResultChilds):-
 	ResultObstacles = Obstacles,
 	ResultChilds = Childs.
 

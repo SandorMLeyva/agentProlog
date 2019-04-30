@@ -12,7 +12,7 @@ very_dirty(BoardHeight,BoardWidth,ChildsCount, CorralCount ,DirtinessCount,Obsta
 
 
 %	comprueba si todo esta limpio y todos los ninnos estan en corral
-all_clean(BoardHeight,BoardWidth, Childs, Dirty,Obstacles,Corral):-
+all_clean(_,_, Childs, Dirty,_,_):-
 	length(Childs, 0),
 	length(Dirty, 0),
 	countGlobalRobotCleanHouse(X),
@@ -42,7 +42,7 @@ simulation(BoardHeight,BoardWidth, I,T, Pos, Childs, Dirty,Obstacles,Corral, Dir
     simulation(BoardHeight,BoardWidth, CurrentT,T, NewPos, ChildsResult2, DirtyResult,ObstaclesResult,Corral, _, _, _, _),!.
 
 
-simulation(BoardHeight,BoardWidth, I,T, Pos, Childs, Dirty,Obstacles,Corral, DirtyResult, ObstaclesResult, ChildsResult, NewPos):-
+simulation(BoardHeight,BoardWidth, _,_, _, Childs, Dirty,Obstacles,Corral, _, _, _, _):-
 	countG(Current),
 	Current < 5,
 	writeln('====================+++Nueva simulacion+++++============================='),
@@ -68,7 +68,7 @@ simulation(BoardHeight,BoardWidth, I,T, Pos, Childs, Dirty,Obstacles,Corral, Dir
 	main,!.	
 % simulation(BoardHeight,BoardWidth, I, Pos, Childs, Dirty,Obstacles,Corral, DirtyResult, ObstaclesResult, ChildsResult3, NewPos):-
 
-simulation(BoardHeight,BoardWidth, I ,T,Pos, Childs, Dirty,Obstacles,Corral, DirtyResult, ObstaclesResult, ChildsResult3, NewPos):-
+simulation(_,_, _ ,_,_, _, _,_,_, _, _, _, _):-
 	writeln('La simulacion finalizo').
 
 
