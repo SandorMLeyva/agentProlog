@@ -12,15 +12,6 @@ countGlobalRobotChild(0).
 :- dynamic(countGlobalRobotCleanHouse/1).
 countGlobalRobotCleanHouse(0).
 
-removeZlist([H|Z]):-
-    writeln('va a borrar'),
-    retract(countGlobalRobotChild(H)),
-    writeln('Borro'),
-    removeZlist(Z).
-removeZlist([]):-
-    assert(countGlobalRobotCleanHouse(0)).
-    
-
 summary:-
     findall(X, countGlobalDirty(X), Li),
     length(Li, N),
@@ -44,11 +35,15 @@ csv:-
     length(Li, N),
     sumlist(Li, Sum),
     Avg is round(Sum / N),
+    retractall(countGlobalDirty(_)),
+    asserta(countGlobalDirty(0)),
     % writeln('Porciento de casillas sucias medio'),
     % writeln(Avg),
     write(Stream,Avg),
     write(Stream,','),
     countGlobalRobotFired(X1),
+    retractall(countGlobalRobotFired(_)),
+    asserta(countGlobalRobotFired(0)),
     % writeln('Total de robot despedidos'),
     % writeln(X1),
     write(Stream,X1),
@@ -61,6 +56,8 @@ csv:-
     write(Stream,Xq),
     write(Stream,','),
     countGlobalRobotCleanHouse(X3),
+    retractall(countGlobalRobotCleanHouse(_)),
+    asserta(countGlobalRobotCleanHouse(0)),
     % writeln('Total de entornos limpios completamente y ninnos en corral'),
     % writeln(X3),
     write(Stream,X3),

@@ -31,18 +31,12 @@ simulation(BoardHeight,BoardWidth, I,T, Pos, Childs, Dirty,Obstacles,Corral, Dir
 	I < T,
 	CurrentT is I + 1,
 	not(all_clean(BoardHeight,BoardWidth, Childs, Dirty,Obstacles,Corral)),
-	writeln('se le paso al robot'),
-	writeln(Childs),
-	% writeln('otros parametros'),
-	% writeln(Dirty),
-	% writeln(Obstacles),
-	% writeln(Corral),
 	robot2(BoardHeight,BoardWidth, Pos, Childs, Dirty,Obstacles,Corral, ChildsResult, DirtyResult1, NewPos),
-	writeln('el rebot retorno'),
-	writeln(ChildsResult),
+	
+
 	child(BoardHeight,BoardWidth, ChildsResult, DirtyResult1,Obstacles,Corral, DirtyResult, ObstaclesResult, ChildsResult2),
-	writeln('el ninno retorno'),
-	writeln(ChildsResult2),
+	
+
 	length(ChildsResult2, ChildsCount),
 	length(Corral, CorralCount),
 	length(DirtyResult, DirtinessCount),
@@ -87,10 +81,10 @@ main:-
 
 	BoardHeight = 15,
 	BoardWidth = 15,
-	TimeChange = 1,
-	ChildsCount = 1,
-	DirtinessPercent = 0,
-	ObstaclePercent = 20,
+	TimeChange = 20,
+	ChildsCount = 15,
+	DirtinessPercent = 10,
+	ObstaclePercent = 30,
 	DirtinessCount is round((DirtinessPercent/100)*BoardHeight*BoardWidth),
 	ObstacleCount is round((ObstaclePercent/100)*BoardHeight*BoardWidth),
 	Dirty = [],
@@ -104,13 +98,11 @@ main:-
 	generate_dirty(BoardHeight,BoardWidth,DirtinessCount,Dirty,ObstaclesEnv,Childs,CorralResult,ResultDirtiness),
 	generate_childs(BoardHeight,BoardWidth,ChildsCount,ResultDirtiness,ObstaclesEnv,Childs,CorralResult,ResultChilds),
 	
-	writeln('===========Ninnos=============='),
-	writeln(ResultChilds),
 	generate_pos(BoardHeight,BoardWidth,ResultDirtiness,ObstaclesEnv,ResultChilds,CorralResult,Robot),
 	simulation(BoardHeight,BoardWidth, 0,TimeChange,Robot, ResultChilds, ResultDirtiness,ObstaclesEnv,CorralResult, DirtyResult, ObstaclesResult, ChildsResult, NewPos).
 	
 iter(X):-
-	X < 30,
+	X < 2,
 	X1 is X + 1,
 	main,
 	csv,
