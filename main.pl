@@ -32,8 +32,6 @@ simulation(BoardHeight,BoardWidth, I,T, Pos, Childs, Dirty,Obstacles,Corral, Dir
 	CurrentT is I + 1,
 	not(all_clean(BoardHeight,BoardWidth, Childs, Dirty,Obstacles,Corral)),
 	robot2(BoardHeight,BoardWidth, Pos, Childs, Dirty,Obstacles,Corral, ChildsResult, DirtyResult1, NewPos),
-	
-
 	child(BoardHeight,BoardWidth, ChildsResult, DirtyResult1,Obstacles,Corral, DirtyResult, ObstaclesResult, ChildsResult2),
 	
 
